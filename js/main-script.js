@@ -21,6 +21,7 @@ function createScene() {
 
     scene.add(new THREE.AxesHelper(10));
 
+    createTowed(0,0,0);
 }
 
 //////////////////////
@@ -166,6 +167,41 @@ function addRobotAntenna(obj, x, y, z, material) {
 function createRobot(x, y, z) {
     robot = new THREE.Object3D();
     scene.add(robot);
+}
+
+//////////////////////
+
+function addTowCarriage(obj, x, y, z, material) {
+    const geometry = new THREE.BoxGeometry(16, 6, 6);
+    const mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addTowHitch(obj, x, y, z, material) {
+    const geometry = new THREE.BoxGeometry(2, 1, 2);
+    const mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function createTowed(x, y, z) {
+    towed = new THREE.Object3D();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+
+    addTowCarriage(towed, 0, 0, 0, material);
+    addTowHitch(towed, 0, -3.5, 6, material);
+    addRobotWheel(towed, -2.5, -4, -6, material);
+    addRobotWheel(towed, 2.5, -4, -6, material);
+    addRobotWheel(towed, -2.5, -4, -4, material);
+    addRobotWheel(towed, 2.5, -4, -4, material);
+    
+    scene.add(towed);   
+    towed.position.x = x;
+    towed.position.y = y;
+    towed.position.z = z;
 }
 
 //////////////////////
