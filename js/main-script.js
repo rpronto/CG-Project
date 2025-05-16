@@ -10,7 +10,7 @@ import * as THREE from "three";
 
 let camera, scene, renderer;
 let cameraFront, cameraSide, cameraTop, cameraPerspective;
-let robot;
+let robot, towed;
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -85,9 +85,10 @@ function addRobotThigh(obj, x, y, z, material) {
 
 
 function addRobotWheel(obj, x, y, z, material) {
-    const geometry = new THREE.CylinderGeometry(0.5, 2, 2);
+    const geometry = new THREE.CylinderGeometry(1, 1, 1);
     const mesh = new THREE.Mesh(geometry, material);
 
+    mesh.rotation.z = Math.PI /2;
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
@@ -172,7 +173,7 @@ function createRobot(x, y, z) {
 //////////////////////
 
 function addTowCarriage(obj, x, y, z, material) {
-    const geometry = new THREE.BoxGeometry(16, 6, 6);
+    const geometry = new THREE.BoxGeometry(6, 6, 16);
     const mesh = new THREE.Mesh(geometry, material);
 
     mesh.position.set(x, y, z);
@@ -202,6 +203,7 @@ function createTowed(x, y, z) {
     towed.position.x = x;
     towed.position.y = y;
     towed.position.z = z;
+    towed.scale.set(2,2,2);
 }
 
 //////////////////////
