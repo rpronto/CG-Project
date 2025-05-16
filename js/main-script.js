@@ -10,6 +10,7 @@ import * as THREE from "three";
 
 let camera, scene, renderer;
 let cameraFront, cameraSide, cameraTop, cameraPerspective;
+let robot;
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -56,6 +57,116 @@ function createCamera() {
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
+
+function addRobotFoot(obj, x, y, z, material) {
+    const geometry = new THREE.BoxGeometry(2, 1, 3);
+    const mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addRobotLeg(obj, x, y, z, material) {
+    const geometry = new THREE.BoxGeometry(2, 6, 2);
+    const mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addRobotThigh(obj, x, y, z, material) {
+    const geometry = new THREE.BoxGeometry(0.5, 2, 0.5);
+    const mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+
+function addRobotWheel(obj, x, y, z, material) {
+    const geometry = new THREE.CylinderGeometry(0.5, 2, 2);
+    const mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addRobotWaist(obj, x, y, z, material) {
+    const geometry = new THREE.BoxGeometry(6, 2, 2);
+    const mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addRobotAbdomen(obj, x, y, z, material) {
+    const geometry = new THREE.BoxGeometry(4, 2, 2);
+    const mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addRobotTorso(obj, x, y, z, material) {
+    const geometry = new THREE.BoxGeometry(6, 4, 2);
+    const mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addRobotArm(obj, x, y, z, material) {
+    const geometry = new THREE.BoxGeometry(1, 5, 1);
+    const mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addRobotForerm(obj, x, y, z, material) {
+    const geometry = new THREE.BoxGeometry(1, 5, 1);
+    const mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addRobotPipe(obj, x, y, z, material) {
+    const geometry = new THREE.CylinderGeometry(0.5, 5, 0.5);
+    const mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addRobotHead(obj, x, y, z, material) {
+    const geometry = new THREE.BoxGeometry(2, 1.5, 1);
+    const mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addRobotEye(obj, x, y, z, material) {
+    const geometry = new THREE.CylinderGeometry(0.5, 0.5, 0.5);
+    const mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addRobotAntenna(obj, x, y, z, material) {
+    const geometry = new THREE.CylinderGeometry(0.5, 0.5, 0.5);
+    const mesh = new THREE.Mesh(geometry, material);
+
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function createRobot(x, y, z) {
+    robot = new THREE.Object3D();
+    scene.add(robot);
+}
 
 //////////////////////
 /* CHECK COLLISIONS */
