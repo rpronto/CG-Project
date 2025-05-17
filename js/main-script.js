@@ -11,6 +11,14 @@ import * as THREE from "three";
 let camera, scene, renderer;
 let cameraFront, cameraSide, cameraTop, cameraPerspective;
 let robot, towed;
+let keysPressed = {
+    ArrowUp: false,
+    ArrowDown: false,
+    ArrowLeft: false,
+    ArrowRight: false
+};
+let wireframeOn = true;
+const speed = 0.5;
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -219,7 +227,19 @@ function handleCollisions() {}
 ////////////
 /* UPDATE */
 ////////////
-function update() {}
+function update() {
+    const direction = new THREE.Vector3();
+
+    if (keysPressed.ArrowUp)    direction.y += 1;
+    if (keysPressed.ArrowDown)  direction.y -= 1;
+    if (keysPressed.ArrowRight) direction.x += 1;
+    if (keysPressed.ArrowLeft)  direction.x -= 1;
+
+    if (direction.lengthSq() > 0) {
+        direction.normalize();    // normalize the direction vector to keep speed consistent in all directions
+        towed.position.add(direction.multiplyScalar(speed));
+    }
+}
 
 /////////////
 /* DISPLAY */
@@ -240,12 +260,14 @@ function init() {
     createCamera();
     
     window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
 }
 
 /////////////////////
 /* ANIMATION CYCLE */
 /////////////////////
 function animate() {
+    update();
     render();
     requestAnimationFrame(animate);
 }
@@ -255,22 +277,41 @@ function animate() {
 ////////////////////////////
 function onResize() {}
 
+//////////////////////
+/* CHANGE WIREFRAME */
+//////////////////////
+function changeWireframe(object) {
+    wireframeOn = !wireframeOn;
+    object.traverse(child => {
+        if (child.isMesh && child.material) {
+            child.material.wireframe = wireframeOn;
+        }
+    });
+}
+
 ///////////////////////
 /* KEY DOWN CALLBACK */
 ///////////////////////
 function onKeyDown(e) {
+    if (e.key in keysPressed) 
+        keysPressed[e.key] = true;
+
     switch (e.key) {
         case '1': camera = cameraFront; break;
         case '2': camera = cameraSide; break;
         case '3': camera = cameraTop; break;
         case '4': camera = cameraPerspective; break;
+        case '7': changeWireframe(scene); break;
     }
 }
 
 ///////////////////////
 /* KEY UP CALLBACK */
 ///////////////////////
-function onKeyUp(e) {}
+function onKeyUp(e) {
+    if (e.key in keysPressed) 
+        keysPressed[e.key] = false;
+}
 
 init();
 animate();
