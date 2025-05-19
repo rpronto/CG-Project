@@ -10,12 +10,14 @@ import * as THREE from "three";
 
 let camera, scene, renderer;
 let cameraFront, cameraSide, cameraTop, cameraPerspective;
-let robot, towed;
+let robot, towed, feet, legs, torso, head;
 let keysPressed = {
     ArrowUp: false,
     ArrowDown: false,
     ArrowLeft: false,
-    ArrowRight: false
+    ArrowRight: false,
+    q: false,
+    a: false,
 };
 let wireframeOn = true;
 const speed = 0.5;
@@ -30,6 +32,7 @@ function createScene() {
     scene.add(new THREE.AxesHelper(10));
 
     createTowed(0,0,0);
+    createRobot(0,-9.5,30);
 }
 
 //////////////////////
@@ -52,7 +55,7 @@ function createCamera() {
     cameraTop.position.set(0, 100, 0);
     cameraTop.lookAt(scene.position);
 
-    cameraPerspective = new THREE.PerspectiveCamera(70, aspect, 1, 1000);
+    cameraPerspective = new THREE.PerspectiveCamera(40, aspect, 1, 1000);
     cameraPerspective.position.set(100, 100, 100);
     cameraPerspective.lookAt(scene.position);
 
@@ -138,11 +141,12 @@ function addRobotForerm(obj, x, y, z, material) {
     const mesh = new THREE.Mesh(geometry, material);
 
     mesh.position.set(x, y, z);
+    mesh.rotation.x = Math.PI / 2;
     obj.add(mesh);
 }
 
 function addRobotPipe(obj, x, y, z, material) {
-    const geometry = new THREE.CylinderGeometry(0.5, 5, 0.5);
+    const geometry = new THREE.CylinderGeometry(0.25, 0.25, 5);
     const mesh = new THREE.Mesh(geometry, material);
 
     mesh.position.set(x, y, z);
@@ -158,23 +162,92 @@ function addRobotHead(obj, x, y, z, material) {
 }
 
 function addRobotEye(obj, x, y, z, material) {
-    const geometry = new THREE.CylinderGeometry(0.5, 0.5, 0.5);
+    const geometry = new THREE.CylinderGeometry(0.25, 0.25, 0.25);
     const mesh = new THREE.Mesh(geometry, material);
 
     mesh.position.set(x, y, z);
+    mesh.rotation.x = Math.PI / 2;
     obj.add(mesh);
 }
 
 function addRobotAntenna(obj, x, y, z, material) {
-    const geometry = new THREE.CylinderGeometry(0.5, 0.5, 0.5);
+    const geometry = new THREE.CylinderGeometry(0.25, 0.25, 0.5);
     const mesh = new THREE.Mesh(geometry, material);
 
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
 
+function createRobotFeet(obj, x, y, z, material) {
+    feet = new THREE.Object3D();
+
+    addRobotFoot(feet, x, y, z, material);
+    addRobotFoot(feet, x + 4, y, z, material);
+    obj.add(feet);
+}
+
+function createRobotLegs(obj, x, y, z, material) {
+    legs = new THREE.Object3D();
+
+    addRobotLeg(legs, x, y, z, material);
+    addRobotLeg(legs, x + 4, y, z, material);
+    addRobotThigh(legs, x, y + 4, z, material);
+    addRobotThigh(legs, x + 4, y + 4, z, material);
+    addRobotWheel(legs, x - 1.5, y - 2, z, material);
+    addRobotWheel(legs, x - 1.5, y + 0.5, z, material);
+    addRobotWheel(legs, x + 5.5, y - 2, z, material);
+    addRobotWheel(legs, x + 5.5, y + 0.5, z, material);
+
+    obj.add(legs);
+}
+
+function createRobotTorso(obj, x, y, z, material) {
+    torso = new THREE.Object3D();
+
+    addRobotWaist(torso, x, y, z, material);
+    addRobotAbdomen(torso, x, y + 2, z, material);
+    addRobotTorso(torso, x, y + 5, z, material);
+    addRobotWheel(torso, x - 3.5, y, z, material);
+    addRobotWheel(torso, x + 3.5, y, z, material);
+
+    obj.add(torso);
+}
+
+function createRobotHead(obj, x, y, z, material) {
+    const head = new THREE.Object3D();
+
+    addRobotHead(head, x, y, z, material);
+    addRobotEye(head, x - 0.5, y + 0.25, z + 0.5, material);
+    addRobotEye(head, x + 0.5, y + 0.25, z + 0.5, material);
+    addRobotAntenna(head, x - 0.5, y + 1, z, material);
+    addRobotAntenna(head, x + 0.5, y + 1, z, material);
+
+    obj.add(head);
+}
+
+function createRobotArms(obj, x, y, z, material) {
+    const arms = new THREE.Object3D();
+
+    addRobotArm(arms, x, y, z, material);
+    addRobotArm(arms, x + 7, y, z, material);
+    addRobotForerm(arms, x, y - 3, z + 2, material);
+    addRobotForerm(arms, x + 7, y - 3, z + 2, material);
+    addRobotPipe(arms, x - 0.75, y + 1, z - 0.5, material);
+    addRobotPipe(arms, x + 7.75, y + 1, z - 0.5, material);
+
+    obj.add(arms);
+}
+
 function createRobot(x, y, z) {
     robot = new THREE.Object3D();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+
+    createRobotFeet(robot, x + 1, y + 0.5, z + 1, material);
+    createRobotLegs(robot, x + 1, y + 3, z + 0.5, material);
+    createRobotTorso(robot, x + 3, y + 9, z + 0.5, material);
+    createRobotHead(robot, x + 3, y + 16.75, z, material);
+    createRobotArms(robot, x - 0.5, y + 13, z, material);
+
     scene.add(robot);
 }
 
@@ -234,6 +307,8 @@ function update() {
     if (keysPressed.ArrowDown)  direction.y -= 1;
     if (keysPressed.ArrowRight) direction.x += 1;
     if (keysPressed.ArrowLeft)  direction.x -= 1;
+    if (keysPressed.q)          feet.rotation.x += 0.01;
+    if (keysPressed.a)          feet.rotation.x -= 0.01;
 
     if (direction.lengthSq() > 0) {
         direction.normalize();    // normalize the direction vector to keep speed consistent in all directions
