@@ -10,7 +10,7 @@ import * as THREE from "three";
 
 let camera, scene, renderer;
 let cameraFront, cameraSide, cameraTop, cameraPerspective;
-let robot, towed, feet, legs, torso, head;
+let robot, towed, feet, legs, torso, head, arms;
 let keysPressed = {
     ArrowUp: false,
     ArrowDown: false,
@@ -18,9 +18,16 @@ let keysPressed = {
     ArrowRight: false,
     q: false,
     a: false,
+    r: false,
+    f: false,
+    w: false,
+    s: false,
 };
 let wireframeOn = true;
 const speed = 0.5;
+let feetRotation = 0;
+let headRotation = 0;
+let legRotation = 0;
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -31,8 +38,8 @@ function createScene() {
 
     scene.add(new THREE.AxesHelper(10));
 
-    createTowed(0,0,0);
-    createRobot(0,-9.5,30);
+    createTowed(0,0,0); 
+    createRobot(-4,-18,35);
 }
 
 //////////////////////
@@ -55,7 +62,7 @@ function createCamera() {
     cameraTop.position.set(0, 100, 0);
     cameraTop.lookAt(scene.position);
 
-    cameraPerspective = new THREE.PerspectiveCamera(40, aspect, 1, 1000);
+    cameraPerspective = new THREE.PerspectiveCamera(50, aspect, 1, 1000);
     cameraPerspective.position.set(100, 100, 100);
     cameraPerspective.lookAt(scene.position);
 
@@ -71,7 +78,7 @@ function createCamera() {
 ////////////////////////
 
 function addRobotFoot(obj, x, y, z, material) {
-    const geometry = new THREE.BoxGeometry(2, 1, 3);
+    const geometry = new THREE.BoxGeometry(2, 1, 2);
     const mesh = new THREE.Mesh(geometry, material);
 
     mesh.position.set(x, y, z);
@@ -181,60 +188,77 @@ function addRobotAntenna(obj, x, y, z, material) {
 function createRobotFeet(obj, x, y, z, material) {
     feet = new THREE.Object3D();
 
-    addRobotFoot(feet, x, y, z, material);
-    addRobotFoot(feet, x + 4, y, z, material);
+    addRobotFoot(feet, 1, 0.5, 1, material);
+    addRobotFoot(feet, 5, 0.5, 1, material);
     obj.add(feet);
+    feet.position.x = x;
+    feet.position.y = y;
+    feet.position.z = z;
 }
 
 function createRobotLegs(obj, x, y, z, material) {
     legs = new THREE.Object3D();
 
-    addRobotLeg(legs, x, y, z, material);
-    addRobotLeg(legs, x + 4, y, z, material);
-    addRobotThigh(legs, x, y + 4, z, material);
-    addRobotThigh(legs, x + 4, y + 4, z, material);
-    addRobotWheel(legs, x - 1.5, y - 2, z, material);
-    addRobotWheel(legs, x - 1.5, y + 0.5, z, material);
-    addRobotWheel(legs, x + 5.5, y - 2, z, material);
-    addRobotWheel(legs, x + 5.5, y + 0.5, z, material);
+    addRobotLeg(legs, 0, -5, 0, material);
+    addRobotLeg(legs, 4, -5, 0, material);
+    addRobotThigh(legs, 0, -1, 0, material);
+    addRobotThigh(legs, 4, -1, 0, material);
+    addRobotWheel(legs, -1.5, -7, 0.5, material);
+    addRobotWheel(legs, -1.5, -4.5, 0.5, material);
+    addRobotWheel(legs, 5.5, -7, 0.5, material);
+    addRobotWheel(legs, 5.5, -4.5, 0.5, material);
 
+    createRobotFeet(legs, -1, -8, 1, material);
+
+    legs.position.x = x;
+    legs.position.y = y;
+    legs.position.z = z;
     obj.add(legs);
 }
 
 function createRobotTorso(obj, x, y, z, material) {
     torso = new THREE.Object3D();
 
-    addRobotWaist(torso, x, y, z, material);
-    addRobotAbdomen(torso, x, y + 2, z, material);
-    addRobotTorso(torso, x, y + 5, z, material);
-    addRobotWheel(torso, x - 3.5, y, z, material);
-    addRobotWheel(torso, x + 3.5, y, z, material);
+    addRobotWaist(torso, 0, 0, 0, material);
+    addRobotAbdomen(torso, 0, 2, 0, material);
+    addRobotTorso(torso, 0, 5, 0, material);
+    addRobotWheel(torso, -3.5, -1.5, 0.5, material);
+    addRobotWheel(torso, 3.5, -1.5, 0.5, material);
 
+    torso.position.x = x;
+    torso.position.y = y;
+    torso.position.z = z;
     obj.add(torso);
 }
 
 function createRobotHead(obj, x, y, z, material) {
-    const head = new THREE.Object3D();
+    head = new THREE.Object3D();
 
-    addRobotHead(head, x, y, z, material);
-    addRobotEye(head, x - 0.5, y + 0.25, z + 0.5, material);
-    addRobotEye(head, x + 0.5, y + 0.25, z + 0.5, material);
-    addRobotAntenna(head, x - 0.5, y + 1, z, material);
-    addRobotAntenna(head, x + 0.5, y + 1, z, material);
+    addRobotHead(head, 0, 0.75, 0.5, material);
+    addRobotEye(head, -0.5, 1, 1, material);
+    addRobotEye(head, 0.5, 1, 1, material);
+    addRobotAntenna(head, -0.5, 1.75, 0.5, material);
+    addRobotAntenna(head, 0.5, 1.75, 0.5, material);
 
+    head.position.x = x;
+    head.position.y = y;
+    head.position.z = z;
     obj.add(head);
 }
 
 function createRobotArms(obj, x, y, z, material) {
-    const arms = new THREE.Object3D();
+    arms = new THREE.Object3D();
 
-    addRobotArm(arms, x, y, z, material);
-    addRobotArm(arms, x + 7, y, z, material);
-    addRobotForerm(arms, x, y - 3, z + 2, material);
-    addRobotForerm(arms, x + 7, y - 3, z + 2, material);
-    addRobotPipe(arms, x - 0.75, y + 1, z - 0.5, material);
-    addRobotPipe(arms, x + 7.75, y + 1, z - 0.5, material);
+    addRobotArm(arms, 0, 0, 0, material);
+    addRobotArm(arms, 7, 0, 0, material);
+    addRobotForerm(arms, 0, -3, 2, material);
+    addRobotForerm(arms, 7, -3, 2, material);
+    addRobotPipe(arms, -0.75, 1, -0.5, material);
+    addRobotPipe(arms, 7.75, 1, -0.5, material);
 
+    arms.position.x = x;
+    arms.position.y = y;
+    arms.position.z = z;
     obj.add(arms);
 }
 
@@ -242,13 +266,16 @@ function createRobot(x, y, z) {
     robot = new THREE.Object3D();
     const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
 
-    createRobotFeet(robot, x + 1, y + 0.5, z + 1, material);
-    createRobotLegs(robot, x + 1, y + 3, z + 0.5, material);
-    createRobotTorso(robot, x + 3, y + 9, z + 0.5, material);
-    createRobotHead(robot, x + 3, y + 16.75, z, material);
-    createRobotArms(robot, x - 0.5, y + 13, z, material);
+    createRobotLegs(robot, 1, 8, 0.5, material);
+    createRobotTorso(robot, 3, 9, 0.5, material);
+    createRobotHead(robot, 3, 16, -0.5, material);
+    createRobotArms(robot, -0.5, 13, 0, material);
 
     scene.add(robot);
+    robot.position.x = x;
+    robot.position.y = y;
+    robot.position.z = z;
+    robot.scale.set(1.5,1.5,1.5);
 }
 
 //////////////////////
@@ -307,8 +334,21 @@ function update() {
     if (keysPressed.ArrowDown)  direction.y -= 1;
     if (keysPressed.ArrowRight) direction.x += 1;
     if (keysPressed.ArrowLeft)  direction.x -= 1;
-    if (keysPressed.q)          feet.rotation.x += 0.01;
-    if (keysPressed.a)          feet.rotation.x -= 0.01;
+    if (keysPressed.q)          feetRotation -= 0.01;
+    if (keysPressed.a)          feetRotation += 0.01;
+    if (keysPressed.r)          headRotation -= 0.01;
+    if (keysPressed.f)          headRotation += 0.01;
+    if (keysPressed.w)          legRotation -= 0.01;
+    if (keysPressed.s)          legRotation += 0.01;
+
+    feetRotation = Math.max(0, Math.min(Math.PI, feetRotation));
+    if (feet) feet.rotation.x = feetRotation;
+
+    headRotation = Math.max(-Math.PI, Math.min(0, headRotation));
+    if (head) head.rotation.x = headRotation;
+
+    legRotation = Math.max(0, Math.min(Math.PI / 2, legRotation));
+    if (legs) legs.rotation.x = legRotation;
 
     if (direction.lengthSq() > 0) {
         direction.normalize();    // normalize the direction vector to keep speed consistent in all directions
@@ -368,10 +408,14 @@ function changeWireframe(object) {
 /* KEY DOWN CALLBACK */
 ///////////////////////
 function onKeyDown(e) {
-    if (e.key in keysPressed) 
-        keysPressed[e.key] = true;
+    let key = e.key;
+    if (!key.startsWith('Arrow')) {
+        key = key.toLowerCase();
+    }
+    if (key in keysPressed) 
+        keysPressed[key] = true;
 
-    switch (e.key) {
+    switch (key) {
         case '1': camera = cameraFront; break;
         case '2': camera = cameraSide; break;
         case '3': camera = cameraTop; break;
@@ -384,8 +428,12 @@ function onKeyDown(e) {
 /* KEY UP CALLBACK */
 ///////////////////////
 function onKeyUp(e) {
-    if (e.key in keysPressed) 
-        keysPressed[e.key] = false;
+    let key = e.key;
+     if (!key.startsWith('Arrow')) {
+        key = key.toLowerCase();
+    }
+    if (key in keysPressed) 
+        keysPressed[key] = false;
 }
 
 init();
