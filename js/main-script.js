@@ -10,7 +10,7 @@ import * as THREE from "three";
 
 let camera, scene, renderer;
 let cameraFront, cameraSide, cameraTop, cameraPerspective;
-let robot, towed, feet, legs, torso, head, arms;
+let robot, towed, feet, legs, torso, head, rightArm, leftArm;
 let keysPressed = {
     ArrowUp: false,
     ArrowDown: false,
@@ -22,12 +22,15 @@ let keysPressed = {
     f: false,
     w: false,
     s: false,
+    e: false,
+    d: false,
 };
 let wireframeOn = true;
 const speed = 0.5;
 let feetRotation = 0;
 let headRotation = 0;
 let legRotation = 0;
+let armsOffset = 0;
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -38,8 +41,8 @@ function createScene() {
 
     scene.add(new THREE.AxesHelper(10));
 
-    createTowed(0,0,0); 
-    createRobot(-4,-18,35);
+    createTowed(0,0,0);
+    createRobot(-4,-20,35); 
 }
 
 //////////////////////
@@ -136,7 +139,7 @@ function addRobotTorso(obj, x, y, z, material) {
 }
 
 function addRobotArm(obj, x, y, z, material) {
-    const geometry = new THREE.BoxGeometry(1, 5, 1);
+    const geometry = new THREE.BoxGeometry(1, 4, 1.5);
     const mesh = new THREE.Mesh(geometry, material);
 
     mesh.position.set(x, y, z);
@@ -144,7 +147,7 @@ function addRobotArm(obj, x, y, z, material) {
 }
 
 function addRobotForerm(obj, x, y, z, material) {
-    const geometry = new THREE.BoxGeometry(1, 5, 1);
+    const geometry = new THREE.BoxGeometry(1, 3.5, 1.5);
     const mesh = new THREE.Mesh(geometry, material);
 
     mesh.position.set(x, y, z);
@@ -246,20 +249,30 @@ function createRobotHead(obj, x, y, z, material) {
     obj.add(head);
 }
 
-function createRobotArms(obj, x, y, z, material) {
-    arms = new THREE.Object3D();
+function createRobotRightArm(obj, x, y, z, material) {
+    rightArm = new THREE.Object3D();
 
-    addRobotArm(arms, 0, 0, 0, material);
-    addRobotArm(arms, 7, 0, 0, material);
-    addRobotForerm(arms, 0, -3, 2, material);
-    addRobotForerm(arms, 7, -3, 2, material);
-    addRobotPipe(arms, -0.75, 1, -0.5, material);
-    addRobotPipe(arms, 7.75, 1, -0.5, material);
+    addRobotArm(rightArm, 0, 0, 0, material);
+    addRobotForerm(rightArm, 0, -2.75, 1, material);
+    addRobotPipe(rightArm, -0.75, 1, -0.75, material);
 
-    arms.position.x = x;
-    arms.position.y = y;
-    arms.position.z = z;
-    obj.add(arms);
+    rightArm.position.x = x;
+    rightArm.position.y = y;
+    rightArm.position.z = z;
+    obj.add(rightArm);
+}
+
+function createRobotLeftArm(obj, x, y, z, material) {
+    leftArm = new THREE.Object3D();
+
+    addRobotArm(leftArm, 0, 0, 0, material);
+    addRobotForerm(leftArm, 0, -2.75, 1, material);
+    addRobotPipe(leftArm, 0.75, 1, -0.75, material);
+
+    leftArm.position.x = x;
+    leftArm.position.y = y;
+    leftArm.position.z = z;
+    obj.add(leftArm);
 }
 
 function createRobot(x, y, z) {
@@ -269,7 +282,8 @@ function createRobot(x, y, z) {
     createRobotLegs(robot, 1, 8, 0.5, material);
     createRobotTorso(robot, 3, 9, 0.5, material);
     createRobotHead(robot, 3, 16, -0.5, material);
-    createRobotArms(robot, -0.5, 13, 0, material);
+    createRobotRightArm(robot, -0.5, 13.5, -1.25, material);
+    createRobotLeftArm(robot, 6.5, 13.5, -1.25, material);
 
     robot.bbox = new THREE.Box3().setFromObject(robot);
     robot.boxHelper = new THREE.BoxHelper(robot, 0xffff00);  // Debugging tool
@@ -361,10 +375,12 @@ function update() {
     if (keysPressed.ArrowLeft)  direction.x -= 1;
     if (keysPressed.q)          feetRotation -= 0.01;
     if (keysPressed.a)          feetRotation += 0.01;
-    if (keysPressed.r)          headRotation -= 0.01;
-    if (keysPressed.f)          headRotation += 0.01;
+    if (keysPressed.f)          headRotation -= 0.01;
+    if (keysPressed.r)          headRotation += 0.01;
     if (keysPressed.w)          legRotation -= 0.01;
     if (keysPressed.s)          legRotation += 0.01;
+    if (keysPressed.e)          armsOffset -= 0.05;
+    if (keysPressed.d)          armsOffset += 0.05;
 
     feetRotation = Math.max(0, Math.min(Math.PI, feetRotation));
     if (feet) feet.rotation.x = feetRotation;
@@ -374,6 +390,10 @@ function update() {
 
     legRotation = Math.max(0, Math.min(Math.PI / 2, legRotation));
     if (legs) legs.rotation.x = legRotation;
+
+    armsOffset = Math.max(0, Math.min(1, armsOffset));
+    leftArm.position.x = 6.5 - armsOffset;
+    rightArm.position.x = -0.5 + armsOffset;
 
     if (direction.lengthSq() > 0) {
         direction.normalize();    // normalize the direction vector to keep speed consistent in all directions
