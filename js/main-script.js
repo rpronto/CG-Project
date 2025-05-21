@@ -271,6 +271,10 @@ function createRobot(x, y, z) {
     createRobotHead(robot, 3, 16, -0.5, material);
     createRobotArms(robot, -0.5, 13, 0, material);
 
+    robot.bbox = new THREE.Box3().setFromObject(robot);
+    robot.boxHelper = new THREE.BoxHelper(robot, 0xffff00);  // Debugging tool
+    scene.add(robot.boxHelper);
+
     scene.add(robot);
     robot.position.x = x;
     robot.position.y = y;
@@ -306,7 +310,11 @@ function createTowed(x, y, z) {
     addRobotWheel(towed, 2.5, -4, -6, material);
     addRobotWheel(towed, -2.5, -4, -4, material);
     addRobotWheel(towed, 2.5, -4, -4, material);
-    
+
+    towed.bbox = new THREE.Box3().setFromObject(towed);
+    towed.boxHelper = new THREE.BoxHelper(towed, 0xffff00); // Debugging tool
+    scene.add(towed.boxHelper);
+
     scene.add(towed);   
     towed.position.x = x;
     towed.position.y = y;
@@ -317,21 +325,38 @@ function createTowed(x, y, z) {
 //////////////////////
 /* CHECK COLLISIONS */
 //////////////////////
-function checkCollisions() {}
+function updateCollision(obj) {
+    obj.bbox.setFromObject(obj);
+    obj.boxHelper.setFromObject(obj);
+}   
+
+function checkCollisions() {
+    updateCollision(robot);
+    updateCollision(towed);
+
+    if (robot.bbox.intersectsBox(towed.bbox)) {
+        handleCollisions();
+    }
+}
+
 
 ///////////////////////
 /* HANDLE COLLISIONS */
 ///////////////////////
-function handleCollisions() {}
+function handleCollisions() {
+    
+}
 
 ////////////
 /* UPDATE */
 ////////////
 function update() {
+    checkCollisions();
+    
     const direction = new THREE.Vector3();
 
-    if (keysPressed.ArrowUp)    direction.y += 1;
-    if (keysPressed.ArrowDown)  direction.y -= 1;
+    if (keysPressed.ArrowUp)    direction.z += 1;
+    if (keysPressed.ArrowDown)  direction.z -= 1;
     if (keysPressed.ArrowRight) direction.x += 1;
     if (keysPressed.ArrowLeft)  direction.x -= 1;
     if (keysPressed.q)          feetRotation -= 0.01;
