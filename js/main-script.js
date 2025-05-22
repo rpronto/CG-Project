@@ -11,6 +11,7 @@ import * as THREE from "three";
 let camera, scene, renderer;
 let cameraOrtographic, cameraPerspective;
 let robot, towed, feet, legs, torso, head, rightArm, leftArm;
+let attachPoint = new THREE.Vector3(0.5, 0, 15);
 let keysPressed = {
     ArrowUp: false,
     ArrowDown: false,
@@ -26,6 +27,7 @@ let keysPressed = {
     d: false,
 };
 let wireframeOn = true;
+let cutscene = false;
 const speed = 0.5;
 let feetRotation = 0;
 let headRotation = 0;
@@ -42,7 +44,7 @@ function createScene() {
 
     scene.add(new THREE.AxesHelper(10));
 
-    createTowed(0,0,0);
+    createTowed(0.5,0,0);
     createRobot(-4,-20,35); 
 }
 
@@ -341,11 +343,18 @@ function boxesCollide(obj1, obj2) {
            obj1.bbox.max.z > obj2.bbox.min.z && obj1.bbox.min.z < obj2.bbox.max.z
 }
 
+function truckMode() {
+    return  feetRotation == Math.PI && 
+            headRotation == -Math.PI &&
+            legRotation == Math.PI / 2 &&
+            armsOffset == 1;
+}
+
 function checkCollisions() {
     updateCollision(robot);
     updateCollision(towed);
 
-    if (boxesCollide(robot, towed)) {
+    if (boxesCollide(robot, towed) && truckMode()) {
         handleCollisions();
     }
 }
@@ -355,15 +364,14 @@ function checkCollisions() {
 /* HANDLE COLLISIONS */
 ///////////////////////
 function handleCollisions() {
-    changeWireframe();
+    cutscene = true;
 }
 
 ////////////
 /* UPDATE */
 ////////////
-function update() {
-    checkCollisions();
-    
+
+function updateControls() {
     const direction = new THREE.Vector3();
 
     if (keysPressed.ArrowUp)    direction.z += 1;
@@ -394,6 +402,29 @@ function update() {
 
     direction.normalize();    // normalize the direction vector to keep speed consistent in all directions
     towed.position.add(direction.multiplyScalar(speed));
+}
+
+function updateAttachTow() {
+    const direction = new THREE.Vector3();
+    direction.x = attachPoint.x - towed.position.x;
+    direction.z = attachPoint.z - towed.position.z;
+    const distance = direction.length();
+    if (distance > speed) {
+        direction.normalize();
+        towed.position.add(direction.multiplyScalar(speed));
+    } else {
+        towed.position.copy(attachPoint);
+    }
+}
+
+function update() {
+    if (cutscene) {
+        updateAttachTow();
+    } else {
+        updateControls();
+    }
+
+    checkCollisions();
 }
 
 /////////////
