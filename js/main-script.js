@@ -344,11 +344,17 @@ function updateCollision(obj) {
     obj.boxHelper.setFromObject(obj);
 }   
 
+function boxesCollide(obj1, obj2) {
+    return obj1.bbox.max.x > obj2.bbox.min.x && obj1.bbox.min.x < obj2.bbox.max.x && 
+           obj1.bbox.max.y > obj2.bbox.min.y && obj1.bbox.min.y < obj2.bbox.max.y && 
+           obj1.bbox.max.z > obj2.bbox.min.z && obj1.bbox.min.z < obj2.bbox.max.z
+}
+
 function checkCollisions() {
     updateCollision(robot);
     updateCollision(towed);
 
-    if (robot.bbox.intersectsBox(towed.bbox)) {
+    if (boxesCollide(robot, towed)) {
         handleCollisions();
     }
 }
@@ -358,7 +364,7 @@ function checkCollisions() {
 /* HANDLE COLLISIONS */
 ///////////////////////
 function handleCollisions() {
-    
+    changeWireframe(robot);
 }
 
 ////////////
