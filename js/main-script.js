@@ -280,8 +280,6 @@ function createRobot(x, y, z) {
     createRobotLeftArm(robot, 6.5, 13.5, -1.25, material);
 
     robot.bbox = new THREE.Box3().setFromObject(robot);
-    robot.boxHelper = new THREE.BoxHelper(robot, 0xffff00);  // Debugging tool
-    scene.add(robot.boxHelper);
 
     scene.add(robot);
     robot.position.x = x;
@@ -319,8 +317,6 @@ function createTowed(x, y, z) {
     addRobotWheel(towed, 2.5, -4, -4, material);
 
     towed.bbox = new THREE.Box3().setFromObject(towed);
-    towed.boxHelper = new THREE.BoxHelper(towed, 0xffff00); // Debugging tool
-    scene.add(towed.boxHelper);
 
     scene.add(towed);   
     towed.position.x = x;
@@ -334,7 +330,6 @@ function createTowed(x, y, z) {
 //////////////////////
 function updateCollision(obj) {
     obj.bbox.setFromObject(obj);
-    obj.boxHelper.setFromObject(obj);
 }   
 
 function boxesCollide(obj1, obj2) {
