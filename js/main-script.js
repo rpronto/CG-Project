@@ -9,7 +9,7 @@ import * as THREE from "three";
 //////////////////////
 
 let camera, scene, renderer;
-let cameraFront, cameraSide, cameraTop, cameraPerspective;
+let cameraOrtographic, cameraPerspective;
 let robot, towed, feet, legs, torso, head, rightArm, leftArm;
 let keysPressed = {
     ArrowUp: false,
@@ -31,6 +31,7 @@ let feetRotation = 0;
 let headRotation = 0;
 let legRotation = 0;
 let armsOffset = 0;
+const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -53,23 +54,15 @@ function createCamera() {
     const aspect = window.innerWidth / window.innerHeight;
     const frustumSize = 100;
 
-    cameraFront = new THREE.OrthographicCamera(-frustumSize * aspect / 2, frustumSize * aspect / 2, frustumSize / 2, -frustumSize / 2, 0.1, 1000);
-    cameraFront.position.set(0, 0, 100);
-    cameraFront.lookAt(scene.position);
-
-    cameraSide = new THREE.OrthographicCamera(-frustumSize * aspect / 2, frustumSize * aspect / 2, frustumSize / 2, -frustumSize / 2, 0.1, 1000);
-    cameraSide.position.set(100, 0, 0);
-    cameraSide.lookAt(scene.position);
-
-    cameraTop = new THREE.OrthographicCamera(-frustumSize * aspect / 2, frustumSize * aspect / 2, frustumSize / 2, -frustumSize / 2, 0.1, 1000);
-    cameraTop.position.set(0, 100, 0);
-    cameraTop.lookAt(scene.position);
+    cameraOrtographic = new THREE.OrthographicCamera(-frustumSize * aspect / 2, frustumSize * aspect / 2, frustumSize / 2, -frustumSize / 2, 0.1, 1000);
+    cameraOrtographic.position.set(0, 0, 100);
+    cameraOrtographic.lookAt(scene.position);
 
     cameraPerspective = new THREE.PerspectiveCamera(50, aspect, 1, 1000);
     cameraPerspective.position.set(100, 100, 100);
     cameraPerspective.lookAt(scene.position);
 
-    camera = cameraFront;
+    camera = cameraOrtographic;
 }
 
 /////////////////////
@@ -277,7 +270,6 @@ function createRobotLeftArm(obj, x, y, z, material) {
 
 function createRobot(x, y, z) {
     robot = new THREE.Object3D();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
 
     createRobotLegs(robot, 1, 8, 0.5, material);
     createRobotTorso(robot, 3, 9, 0.5, material);
@@ -316,7 +308,6 @@ function addTowHitch(obj, x, y, z, material) {
 
 function createTowed(x, y, z) {
     towed = new THREE.Object3D();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
 
     addTowCarriage(towed, 0, 0, 0, material);
     addTowHitch(towed, 0, -3.5, 6, material);
@@ -364,7 +355,7 @@ function checkCollisions() {
 /* HANDLE COLLISIONS */
 ///////////////////////
 function handleCollisions() {
-    changeWireframe(robot);
+    changeWireframe();
 }
 
 ////////////
@@ -401,10 +392,8 @@ function update() {
     leftArm.position.x = 6.5 - armsOffset;
     rightArm.position.x = -0.5 + armsOffset;
 
-    if (direction.lengthSq() > 0) {
-        direction.normalize();    // normalize the direction vector to keep speed consistent in all directions
-        towed.position.add(direction.multiplyScalar(speed));
-    }
+    direction.normalize();    // normalize the direction vector to keep speed consistent in all directions
+    towed.position.add(direction.multiplyScalar(speed));
 }
 
 /////////////
@@ -446,13 +435,9 @@ function onResize() {}
 //////////////////////
 /* CHANGE WIREFRAME */
 //////////////////////
-function changeWireframe(object) {
+function changeWireframe() {
     wireframeOn = !wireframeOn;
-    object.traverse(child => {
-        if (child.isMesh && child.material) {
-            child.material.wireframe = wireframeOn;
-        }
-    });
+    material.wireframe = wireframeOn;
 }
 
 ///////////////////////
@@ -467,11 +452,21 @@ function onKeyDown(e) {
         keysPressed[key] = true;
 
     switch (key) {
-        case '1': camera = cameraFront; break;
-        case '2': camera = cameraSide; break;
-        case '3': camera = cameraTop; break;
-        case '4': camera = cameraPerspective; break;
-        case '7': changeWireframe(scene); break;
+        case '1': camera = cameraOrtographic; 
+                  camera.position.set(0, 0, 100);
+                  camera.lookAt(scene.position);
+                  break;
+        case '2': camera = cameraOrtographic; 
+                  camera.position.set(100, 0, 0);
+                  camera.lookAt(scene.position);
+                  break;
+        case '3': camera = cameraOrtographic;
+                  camera.position.set(0, 100, 0);
+                  camera.lookAt(scene.position);
+                  break;
+        case '4': camera = cameraPerspective; 
+                  break;
+        case '7': changeWireframe(); break;
     }
 }
 
