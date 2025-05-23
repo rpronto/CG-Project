@@ -1,8 +1,8 @@
 import * as THREE from "three";
-//import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-//import { VRButton } from "three/addons/webxr/VRButton.js";
-//import * as Stats from "three/addons/libs/stats.module.js";
-//import { GUI } from "three/addons/libs/lil-gui.module.min.js";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { VRButton } from "three/addons/webxr/VRButton.js";
+import * as Stats from "three/addons/libs/stats.module.js";
+import { GUI } from "three/addons/libs/lil-gui.module.min.js";
 
 //////////////////////
 /* GLOBAL VARIABLES */
@@ -10,7 +10,7 @@ import * as THREE from "three";
 
 let camera, scene, renderer;
 let cameraOrtographic, cameraPerspective;
-let robot, towed, feet, legs, torso, head, rightArm, leftArm;
+let robot, trailer, feet, legs, torso, head, rightArm, leftArm;
 let attachPoint = new THREE.Vector3(0.5, 0, 15);
 let keysPressed = {
     ArrowUp: false,
@@ -44,7 +44,7 @@ function createScene() {
 
     scene.add(new THREE.AxesHelper(10));
 
-    createTowed(0.5,0,0);
+    createTrailer(0.5,0,0);
     createRobot(-4,-20,35); 
 }
 
@@ -290,7 +290,7 @@ function createRobot(x, y, z) {
 
 //////////////////////
 
-function addTowCarriage(obj, x, y, z, material) {
+function addTrailerCarriage(obj, x, y, z, material) {
     const geometry = new THREE.BoxGeometry(6, 6, 16);
     const mesh = new THREE.Mesh(geometry, material);
 
@@ -298,7 +298,7 @@ function addTowCarriage(obj, x, y, z, material) {
     obj.add(mesh);
 }
 
-function addTowHitch(obj, x, y, z, material) {
+function addTrailerHitch(obj, x, y, z, material) {
     const geometry = new THREE.BoxGeometry(2, 1, 2);
     const mesh = new THREE.Mesh(geometry, material);
 
@@ -306,23 +306,23 @@ function addTowHitch(obj, x, y, z, material) {
     obj.add(mesh);
 }
 
-function createTowed(x, y, z) {
-    towed = new THREE.Object3D();
+function createTrailer(x, y, z) {
+    trailer = new THREE.Object3D();
 
-    addTowCarriage(towed, 0, 0, 0, material);
-    addTowHitch(towed, 0, -3.5, 6, material);
-    addRobotWheel(towed, -2.5, -4, -6, material);
-    addRobotWheel(towed, 2.5, -4, -6, material);
-    addRobotWheel(towed, -2.5, -4, -4, material);
-    addRobotWheel(towed, 2.5, -4, -4, material);
+    addTrailerCarriage(trailer, 0, 0, 0, material);
+    addTrailerHitch(trailer, 0, -3.5, 6, material);
+    addRobotWheel(trailer, -2.5, -4, -6, material);
+    addRobotWheel(trailer, 2.5, -4, -6, material);
+    addRobotWheel(trailer, -2.5, -4, -4, material);
+    addRobotWheel(trailer, 2.5, -4, -4, material);
 
-    towed.bbox = new THREE.Box3().setFromObject(towed);
+    trailer.bbox = new THREE.Box3().setFromObject(trailer);
 
-    scene.add(towed);   
-    towed.position.x = x;
-    towed.position.y = y;
-    towed.position.z = z;
-    towed.scale.set(2,2,2);
+    scene.add(trailer);   
+    trailer.position.x = x;
+    trailer.position.y = y;
+    trailer.position.z = z;
+    trailer.scale.set(2,2,2);
 }
 
 //////////////////////
@@ -347,9 +347,9 @@ function truckMode() {
 
 function checkCollisions() {
     updateCollision(robot);
-    updateCollision(towed);
+    updateCollision(trailer);
 
-    if (boxesCollide(robot, towed) && truckMode()) {
+    if (boxesCollide(robot, trailer) && truckMode()) {
         handleCollisions();
     }
 }
@@ -367,54 +367,72 @@ function handleCollisions() {
 ////////////
 
 function updateControls() {
-    const direction = new THREE.Vector3();
+    const trailerVector = new THREE.Vector3();
+    const feetVector = new THREE.Vector3();
+    const headVector = new THREE.Vector3();
+    const legVector = new THREE.Vector3();
+    const armsVector = new THREE.Vector3();
 
-    if (keysPressed.ArrowUp)    direction.z += 1;
-    if (keysPressed.ArrowDown)  direction.z -= 1;
-    if (keysPressed.ArrowRight) direction.x += 1;
-    if (keysPressed.ArrowLeft)  direction.x -= 1;
-    if (keysPressed.q)          feetRotation -= 0.01;
-    if (keysPressed.a)          feetRotation += 0.01;
-    if (keysPressed.f)          headRotation -= 0.01;
-    if (keysPressed.r)          headRotation += 0.01;
-    if (keysPressed.w)          legRotation -= 0.01;
-    if (keysPressed.s)          legRotation += 0.01;
-    if (keysPressed.e)          armsOffset -= 0.05;
-    if (keysPressed.d)          armsOffset += 0.05;
+    // Trailer
+    if (keysPressed.ArrowUp)    trailerVector.z += 1;
+    if (keysPressed.ArrowDown)  trailerVector.z -= 1;
+    if (keysPressed.ArrowRight) trailerVector.x += 1;
+    if (keysPressed.ArrowLeft)  trailerVector.x -= 1;
+    trailerVector.normalize();    // normalize the trailerVector to keep speed consistent in all directions
+    if (trailer) trailer.position.add(trailerVector.multiplyScalar(speed));
 
+    // Robot feet
+    if (keysPressed.q)          feetVector.x -= 1;
+    if (keysPressed.a)          feetVector.x += 1;
+    feetVector.normalize();
+    feetRotation += feetVector.x * 0.01;
     feetRotation = Math.max(0, Math.min(Math.PI, feetRotation));
     if (feet) feet.rotation.x = feetRotation;
 
+    // Robot head
+    if (keysPressed.f)          headVector.x -= 1;
+    if (keysPressed.r)          headVector.x += 1;
+    headVector.normalize();
+    headRotation += headVector.x * 0.01
     headRotation = Math.max(-Math.PI, Math.min(0, headRotation));
     if (head) head.rotation.x = headRotation;
 
+    // Robot legs
+    if (keysPressed.w)          legVector.x -= 1;
+    if (keysPressed.s)          legVector.x += 1;
+    legVector.normalize();
+    legRotation += legVector.x * 0.01;
     legRotation = Math.max(0, Math.min(Math.PI / 2, legRotation));
     if (legs) legs.rotation.x = legRotation;
 
+    // Robot arms
+    if (keysPressed.e)          armsVector.x -= 1;
+    if (keysPressed.d)          armsVector.x += 1;
+    armsVector.normalize();
+    armsOffset += armsVector.x * 0.05;
     armsOffset = Math.max(0, Math.min(1, armsOffset));
-    leftArm.position.x = 6.5 - armsOffset;
-    rightArm.position.x = -0.5 + armsOffset;
-
-    direction.normalize();    // normalize the direction vector to keep speed consistent in all directions
-    towed.position.add(direction.multiplyScalar(speed));
+    if (leftArm && rightArm) {
+        leftArm.position.x = 6.5 - armsOffset;
+        rightArm.position.x = -0.5 + armsOffset;
+    }
 }
 
-function updateAttachTow() {
+function updateAttachTrailer() {
     const direction = new THREE.Vector3();
-    direction.x = attachPoint.x - towed.position.x;
-    direction.z = attachPoint.z - towed.position.z;
+    direction.x = attachPoint.x - trailer.position.x;
+    direction.z = attachPoint.z - trailer.position.z;
     const distance = direction.length();
     if (distance > speed) {
         direction.normalize();
-        towed.position.add(direction.multiplyScalar(speed));
+        trailer.position.add(direction.multiplyScalar(speed));
     } else {
-        towed.position.copy(attachPoint);
+        trailer.position.copy(attachPoint);
     }
 }
 
 function update() {
     if (cutscene) {
-        updateAttachTow();
+        updateAttachTrailer();
     } else {
         updateControls();
     }
