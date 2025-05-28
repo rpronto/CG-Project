@@ -10,7 +10,7 @@ import { TextureGenerator } from './TextureGenerator.js';
 //////////////////////
 
 let camera, scene, renderer;
-let land, moon;
+let land, skyDome, moon;
 let directionalLight, lightOn = true;
 
 /////////////////////
@@ -19,8 +19,9 @@ let directionalLight, lightOn = true;
 function createScene() {
     scene = new THREE.Scene();
 
-    createMoon();
     createLights();
+    createSkyDome();
+    createMoon();
     createField();
 }
 
@@ -31,7 +32,7 @@ function createScene() {
 function createCamera() {
     const aspect = window.innerWidth / window.innerHeight;
     camera = new THREE.PerspectiveCamera(50, aspect, 1, 1000);
-    camera.position.set(100, 100, 100);
+    camera.position.set(100, 90, 100);
     camera.lookAt(scene.position);
 }
 
@@ -41,7 +42,7 @@ function createCamera() {
 
 function createLights() {
     directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.copy(moon.position);
+    directionalLight.position.set(50, 100, 50);
     directionalLight.target.position.set(0, 0, 0); 
     scene.add(directionalLight);
     scene.add(directionalLight.target);
@@ -53,21 +54,30 @@ function createLights() {
 ////////////////////////
 
 function createMoon() {
-    const geometry = new THREE.SphereGeometry(10, 30, 30);
-    const material = new THREE.MeshStandardMaterial({color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 1,});
+    const geometry = new THREE.SphereGeometry(10, 64, 64);
+    const loader = new THREE.TextureLoader();
+    
+    loader.load('utils/moon-texture.jpg', (texture) => {
+        const material = new THREE.MeshStandardMaterial({
+            map: texture,
+            emissive: 0x111111,
+            emissiveIntensity: 4,
 
-    moon = new THREE.Mesh(geometry, material);
-    moon.position.set(75, 60, -50);
-    scene.add(moon);
+        });
+
+        moon = new THREE.Mesh(geometry, material);
+        moon.position.set(75, 60, -65);
+        scene.add(moon);
+    });
 }
 
 function createField() {
-    const width = 200, height = 200, segments = 504;
+    const width = 255, height = 255, segments = 504;
     const geometry = new THREE.PlaneGeometry(width, height, segments, segments);
     const texture = TextureGenerator.generateFieldTexture();
     const loader = new THREE.TextureLoader();
 
-    loader.load('js/alentejo-heightmap.png', (heightmap) => {
+    loader.load('utils/alentejo-heightmap.png', (heightmap) => {
         let canvas, ctx, imageData, x, y, index, heightValue, material;
         canvas = document.createElement('canvas');
         canvas.width = heightmap.image.width;
@@ -82,7 +92,7 @@ function createField() {
             y = Math.floor(i / canvas.width);
             index = (y * canvas.width + x) * 4;
             heightValue = imageData[index] / 255;
-            geometry.attributes.position.setZ(i, heightValue * 20); 
+            geometry.attributes.position.setZ(i, heightValue * 30); 
         }
 
         geometry.computeVertexNormals(); 
@@ -92,6 +102,18 @@ function createField() {
         land.rotation.x = -Math.PI / 2;
         scene.add(land);
     });
+}
+
+function createSkyDome() {
+    const texture = TextureGenerator.generateSkyTexture();
+    const geometry = new THREE.SphereGeometry(500, 60, 40); // bigger than field
+    const material = new THREE.MeshBasicMaterial({
+        map: texture,
+        side: THREE.BackSide  
+    });
+
+    skyDome = new THREE.Mesh(geometry, material);
+    scene.add(skyDome);
 }
 
 
@@ -130,6 +152,7 @@ function init() {
 
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
+    window.addEventListener('resize', onResize, false);
 }
 
 /////////////////////
@@ -160,6 +183,11 @@ function onKeyDown(e) {
             }
             break;
         case '2': 
+            if (skyDome) {
+                const newTexture = TextureGenerator.generateSkyTexture();
+                skyDome.material.map = newTexture;
+                skyDome.material.needsUpdate = true;
+            }
             break;
         case 'd':
             lightOn = !lightOn;
