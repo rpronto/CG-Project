@@ -10,12 +10,18 @@ import { TextureGenerator } from './TextureGenerator.js';
 //////////////////////
 
 let camera, scene, renderer;
+let land, moon;
+let directionalLight, lightOn = true;
 
 /////////////////////
 /* CREATE SCENE(S) */
 /////////////////////
 function createScene() {
     scene = new THREE.Scene();
+
+    createMoon();
+    createLights();
+    createField();
 }
 
 //////////////////////
@@ -33,11 +39,60 @@ function createCamera() {
 /* CREATE LIGHT(S) */
 /////////////////////
 
+function createLights() {
+    directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.copy(moon.position);
+    directionalLight.target.position.set(0, 0, 0); 
+    scene.add(directionalLight);
+    scene.add(directionalLight.target);
+}
+
+
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
 
+function createMoon() {
+    const geometry = new THREE.SphereGeometry(10, 30, 30);
+    const material = new THREE.MeshStandardMaterial({color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 1,});
 
+    moon = new THREE.Mesh(geometry, material);
+    moon.position.set(75, 60, -50);
+    scene.add(moon);
+}
+
+function createField() {
+    const width = 200, height = 200, segments = 504;
+    const geometry = new THREE.PlaneGeometry(width, height, segments, segments);
+    const texture = TextureGenerator.generateFieldTexture();
+    const loader = new THREE.TextureLoader();
+
+    loader.load('js/alentejo-heightmap.png', (heightmap) => {
+        let canvas, ctx, imageData, x, y, index, heightValue, material;
+        canvas = document.createElement('canvas');
+        canvas.width = heightmap.image.width;
+        canvas.height = heightmap.image.height;
+        ctx = canvas.getContext('2d');
+        ctx.drawImage(heightmap.image, 0, 0);
+
+        imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+        for (let i = 0; i < geometry.attributes.position.count; i++) {
+            x = i % canvas.width;
+            y = Math.floor(i / canvas.width);
+            index = (y * canvas.width + x) * 4;
+            heightValue = imageData[index] / 255;
+            geometry.attributes.position.setZ(i, heightValue * 20); 
+        }
+
+        geometry.computeVertexNormals(); 
+
+        material = new THREE.MeshStandardMaterial({ map: texture });
+        land = new THREE.Mesh(geometry, material);
+        land.rotation.x = -Math.PI / 2;
+        scene.add(land);
+    });
+}
 
 
 //////////////////////
@@ -73,7 +128,6 @@ function init() {
     createScene();
     createCamera();
 
-
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
 }
@@ -96,12 +150,21 @@ function onResize() {}
 /* KEY DOWN CALLBACK */
 ///////////////////////
 function onKeyDown(e) {
-    let key = e.key;
+    let key = e.key.toLowerCase();
     switch (key) {
         case '1': 
-                  break;
+            if (land) {
+                const newTexture = TextureGenerator.generateFieldTexture();
+                land.material.map = newTexture;
+                land.material.needsUpdate = true;
+            }
+            break;
         case '2': 
-                  break;
+            break;
+        case 'd':
+            lightOn = !lightOn;
+            directionalLight.visible = lightOn;
+            break;
     }
 }
 
