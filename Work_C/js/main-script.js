@@ -9,6 +9,9 @@ import { TextureGenerator } from './TextureGenerator.js';
 /* GLOBAL VARIABLES */
 //////////////////////
 
+// Retirar depois, só para facilitar a construção
+let controls;
+////////////////////////////////
 let camera, scene, renderer;
 let land, skyDome, moon;
 let directionalLight, lightOn = true;
@@ -29,7 +32,7 @@ function createScene() {
     createTree(50,20,70,0,1);
     createTree(20,15,30,Math.PI,2);
     createTree(10,10,87,Math.PI/4,1.5);
-    createHouse(0, 50, 0);
+    createHouse(70, 50, 0);
 }
 
 //////////////////////
@@ -39,7 +42,7 @@ function createScene() {
 function createCamera() {
     const aspect = window.innerWidth / window.innerHeight;
     camera = new THREE.PerspectiveCamera(50, aspect, 1, 1000);
-    camera.position.set(200, 200, 200);
+    camera.position.set(100, 100, 100);
     camera.lookAt(scene.position);
 }
 
@@ -169,36 +172,103 @@ function createHouse(x, y, z) {
     const geometry = new THREE.BufferGeometry();
 
     const vertices = new Float32Array( [
-    //////////////// PAREDE DA PORTA
-    0.0, 0.0,  4.0,  // inferior esquerdo
-    0.0, 7.0,  4.0,  // superior esquerdo
-    0.0,  7.0,  22.0, // superior direito
-	0.0,  0.0,  22.0,  // inferior direito
-    ///////////////// PAREDE DO BANCO
-    0.0, 0.0,  22.0,  // inferior esquerdo
-    0.0, 7.0,  22.0,  // superior esquerdo
-    -8.0,  7.0,  22.0, // superior direito
-	-8.0,  0.0, 22.0,  // inferior direito
-    ///////////////// PILAR 1
-    -8.0, 0.0,  22.0,  // inferior esquerdo
-    -8.0, 5.0,  22.0,  // superior esquerdo
-    -10.0,  4.0,  22.0, // superior direito
-	-10.0,  0.0, 22.0,  // inferior direito
+    ////////////////    PAREDE DA PORTA
+    0.0, 0.0,  4.0,     // inferior esquerdo
+    0.0, 7.0,  4.0,     // superior esquerdo
+    0.0,  7.0,  22.0,   // superior direito
+	0.0,  0.0,  22.0,   // inferior direito
+    /////////////////   PAREDE DO BANCO
+    0.0, 0.0,  22.0,    // inferior esquerdo
+    0.0, 7.0,  22.0,    // superior esquerdo
+    -8.0,  7.0,  22.0,  // superior direito
+	-8.0,  0.0, 22.0,   // inferior direito
+    /////////////////   PILAR 1 - PARTE LATERAL ESQ
+    0.0, 0.0,  22.0,   // inferior esquerdo
+    0.0, 5.0,  22.0,   // superior esquerdo
+    2.0,  4.0,  22.0, // superior direito
+	2.0,  0.0, 22.0,  // inferior direito
+    /////////////////   PILAR 1 - PARTE LATERAL DIR
+    0.0, 0.0,  20.0,   // inferior esquerdo
+    0.0, 5.0,  20.0,   // superior esquerdo
+    2.0,  4.0,  20.0, // superior direito
+	2.0,  0.0, 20.0,  // inferior direito
+    /////////////////   PILAR 1 - PARTE FRONTAL
+    2.0,  0.0,  22.0,   // inferior esquerdo
+    2.0,  4.0,  22.0,   // superior esquerdo
+    2.0,  4.0,  20.0, // superior direito
+	2.0,  0.0, 20.0,  // inferior direito
+    /////////////////   PILAR 1 - PARTE SUPERIOR
+    2.0,  4.0,  22.0,   // inferior esquerdo
+    0.0,  5.0,  22.0,   // superior esquerdo
+    0.0,  5.0,  20.0, // superior direito
+	2.0,  0.0, 20.0,  // inferior direito
+    /////////////////   PILAR 2 - PARTE LATERAL ESQ
+    /////////////////   PILAR 2 - PARTE LATERAL DIR
+    /////////////////   PILAR 2 - PARTE FRONTAL
+    /////////////////   PILAR 2 - PARTE SUPERIOR
+    /////////////////   PILAR 3 - PARTE LATERAL ESQ
+    0.0, 0.0,  6.0,   // inferior esquerdo
+    0.0, 5.0,  6.0,   // superior esquerdo
+    2.0,  4.0,  6.0, // superior direito
+	2.0,  0.0, 6.0,  // inferior direito
+    /////////////////   PILAR 3 - PARTE LATERAL DIR
+    0.0, 0.0,  4.0,   // inferior esquerdo
+    0.0, 5.0,  4.0,   // superior esquerdo
+    2.0,  4.0,  4.0, // superior direito
+	2.0,  0.0, 4.0,  // inferior direito
+    /////////////////   PILAR 3 - PARTE FRONTAL
+    2.0,  0.0,  6.0,   // inferior esquerdo
+    2.0,  4.0,  6.0,   // superior esquerdo
+    2.0,  4.0,  4.0, // superior direito
+	2.0,  0.0, 4.0,  // inferior direito
+    /////////////////   PILAR 3 - PARTE SUPERIOR
+    2.0,  4.0,  6.0,   // inferior esquerdo
+    0.0,  5.0,  6.0,   // superior esquerdo
+    0.0,  5.0,  4.0, // superior direito
+	2.0,  0.0, 4.0,  // inferior direito
 ] );
 
     const indices = [
+        ////////////////    PAREDE DA PORTA
 	    0, 1, 2,
 	    2, 3, 0,
+        /////////////////   PAREDE DO BANCO
         4, 5, 6,
 	    6, 7, 4,
+        /////////////////   PILAR 1 - PARTE LATERAL ESQ
         8, 9, 10,
 	    10, 11, 8,
+        /////////////////   PILAR 1 - PARTE LATERAL DIR
+        12, 13, 14,
+	    14, 15, 12,
+        /////////////////   PILAR 1 - PARTE FRONTAL
+        16, 17, 18,
+	    18, 19, 16,
+        /////////////////   PILAR 1 - PARTE SUPERIOR
+        20, 21, 22,
+	    22, 23, 20,
+        /////////////////   PILAR 2 - PARTE LATERAL ESQ
+        /////////////////   PILAR 2 - PARTE LATERAL DIR
+        /////////////////   PILAR 2 - PARTE FRONTAL
+        /////////////////   PILAR 2 - PARTE SUPERIOR
+        /////////////////   PILAR 3 - PARTE LATERAL ESQ
+        24, 25, 26,
+	    26, 27, 24,
+        /////////////////   PILAR 3 - PARTE LATERAL DIR
+        28, 29, 30,
+	    30, 31, 28,
+        /////////////////   PILAR 3 - PARTE FRONTAL
+        32, 33, 34,
+	    34, 35, 32,
+        /////////////////   PILAR 3 - PARTE SUPERIOR
+        36, 37, 38,
+	    38, 39, 36,
     ];
 
     geometry.setIndex( indices );
     
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const material = new THREE.MeshStandardMaterial( { color: 0xff0000 } );
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
     const mesh = new THREE.Mesh( geometry, material );
     house.add(mesh);
     house.position.set(x, y, z);
@@ -219,7 +289,13 @@ function handleCollisions() {}
 ////////////
 /* UPDATE */
 ////////////
-function update() {}
+function update() {
+    // Retirar depois, só para facilitar a construção
+    if (!renderer.xr.isPresenting && controls) {
+        controls.update();
+    }
+    ////////////////////////////////////////////////
+}
 
 /////////////
 /* DISPLAY */
@@ -238,6 +314,12 @@ function init() {
 
     createScene();
     createCamera();
+
+    // Retirar depois, só para facilitar a construção
+    controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    //////////////////////////////
 
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
