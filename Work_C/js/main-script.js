@@ -182,6 +182,7 @@ function createHouse(x, y, z) {
     0.0, 7.0,  22.0,    // superior esquerdo
     -8.0,  7.0,  22.0,  // superior direito
 	-8.0,  0.0, 22.0,   // inferior direito
+
     /////////////////   PILAR 1 - PARTE LATERAL ESQ
     0.0, 0.0,  22.0,   // inferior esquerdo
     0.0, 5.0,  22.0,   // superior esquerdo
@@ -202,10 +203,28 @@ function createHouse(x, y, z) {
     0.0,  5.0,  22.0,   // superior esquerdo
     0.0,  5.0,  20.0, // superior direito
 	2.0,  0.0, 20.0,  // inferior direito
+
     /////////////////   PILAR 2 - PARTE LATERAL ESQ
+    0.0, 0.0,  15.0,   // inferior esquerdo
+    0.0, 5.0,  15.0,   // superior esquerdo
+    2.0,  4.0,  15.0, // superior direito
+	2.0,  0.0, 15.0,  // inferior direito
     /////////////////   PILAR 2 - PARTE LATERAL DIR
+    0.0, 0.0,  13.0,   // inferior esquerdo
+    0.0, 5.0,  13.0,   // superior esquerdo
+    2.0,  4.0,  13.0, // superior direito
+	2.0,  0.0, 13.0,  // inferior direito
     /////////////////   PILAR 2 - PARTE FRONTAL
+    2.0,  0.0,  15.0,   // inferior esquerdo
+    2.0,  4.0,  15.0,   // superior esquerdo
+    2.0,  4.0,  13.0, // superior direito
+	2.0,  0.0, 13.0,  // inferior direito
     /////////////////   PILAR 2 - PARTE SUPERIOR
+    2.0,  4.0,  15.0,   // inferior esquerdo
+    0.0,  5.0,  15.0,   // superior esquerdo
+    0.0,  5.0,  13.0, // superior direito
+	2.0,  0.0, 13.0,  // inferior direito
+
     /////////////////   PILAR 3 - PARTE LATERAL ESQ
     0.0, 0.0,  6.0,   // inferior esquerdo
     0.0, 5.0,  6.0,   // superior esquerdo
@@ -226,6 +245,38 @@ function createHouse(x, y, z) {
     0.0,  5.0,  6.0,   // superior esquerdo
     0.0,  5.0,  4.0, // superior direito
 	2.0,  0.0, 4.0,  // inferior direito
+
+    ////////////////    TELHADO - SEGMENTO 1
+    0.0, 7.0,  4.0,     // inferior esquerdo
+    -2.25, 8.0,  4.0,     // superior esquerdo
+    -2.25, 8.0,  22.0,   // superior direito
+	0.0, 7.0,  22.0,   // inferior direito
+    ////////////////    TELHADO - SEGMENTO 2
+    -2.25, 8.0,  4.0,     // inferior esquerdo
+    -3.5, 9.0,  4.0,     // superior esquerdo
+    -3.5, 9.0,  22.0,   // superior direito
+	-2.25, 8.0,  22.0,   // inferior direito
+    ////////////////    TELHADO - SEGMENTO 3
+    -3.5, 9.0,  4.0,     // inferior esquerdo
+    -4, 10.0,  4.0,     // superior esquerdo
+    -4, 10.0,  22.0,   // superior direito
+	-3.5, 9.0,  22.0,   // inferior direito
+
+    ////////////////    TELHADO - SEGMENTO 4
+    -8.0, 7.0,  4.0,     // inferior esquerdo
+    -5.75, 8.0,  4.0,     // superior esquerdo
+    -5.75, 8.0,  22.0,   // superior direito
+	-8.0, 7.0,  22.0,   // inferior direito
+    ////////////////    TELHADO - SEGMENTO 5
+    -5.75, 8.0,  4.0,     // inferior esquerdo
+    -4.5, 9.0,  4.0,     // superior esquerdo
+    -4.5, 9.0,  22.0,   // superior direito
+	-5.75, 8.0,  22.0,   // inferior direito
+    ////////////////    TELHADO - SEGMENTO 6
+    -4.5, 9.0,  4.0,     // inferior esquerdo
+    -4, 10.0,  4.0,     // superior esquerdo
+    -4, 10.0,  22.0,   // superior direito
+	-4.5, 9.0,  22.0,   // inferior direito
 ] );
 
     const indices = [
@@ -248,21 +299,48 @@ function createHouse(x, y, z) {
         20, 21, 22,
 	    22, 23, 20,
         /////////////////   PILAR 2 - PARTE LATERAL ESQ
-        /////////////////   PILAR 2 - PARTE LATERAL DIR
-        /////////////////   PILAR 2 - PARTE FRONTAL
-        /////////////////   PILAR 2 - PARTE SUPERIOR
-        /////////////////   PILAR 3 - PARTE LATERAL ESQ
         24, 25, 26,
 	    26, 27, 24,
-        /////////////////   PILAR 3 - PARTE LATERAL DIR
+        /////////////////   PILAR 2 - PARTE LATERAL DIR
         28, 29, 30,
 	    30, 31, 28,
-        /////////////////   PILAR 3 - PARTE FRONTAL
+        /////////////////   PILAR 2 - PARTE FRONTAL
         32, 33, 34,
 	    34, 35, 32,
-        /////////////////   PILAR 3 - PARTE SUPERIOR
+        /////////////////   PILAR 2 - PARTE SUPERIOR
         36, 37, 38,
 	    38, 39, 36,
+        /////////////////   PILAR 3 - PARTE LATERAL ESQ
+        40, 41, 42,
+	    42, 43, 40,
+        /////////////////   PILAR 3 - PARTE LATERAL DIR
+        44, 45, 46,
+	    46, 47, 44,
+        /////////////////   PILAR 3 - PARTE FRONTAL
+        48, 49, 50,
+	    50, 51, 48,
+        /////////////////   PILAR 3 - PARTE SUPERIOR
+        52, 53, 54,
+	    54, 55, 52,
+        /////////////////   TELHADO - SEGMENTO 1
+        56, 57, 58,
+	    58, 59, 56,
+        /////////////////   TELHADO - SEGMENTO 2
+        60, 61, 62,
+	    62, 63, 60,
+        /////////////////   TELHADO - SEGMENTO 3
+        64, 65, 66,
+	    66, 67, 64,
+        /////////////////   TELHADO - SEGMENTO 4
+        68, 69, 70,
+	    70, 71, 68,
+        /////////////////   TELHADO - SEGMENTO 5
+        72, 73, 74,
+	    74, 75, 72,
+        /////////////////   TELHADO - SEGMENTO 6
+        76, 77, 78,
+	    78, 79, 76,
+        
     ];
 
     geometry.setIndex( indices );
