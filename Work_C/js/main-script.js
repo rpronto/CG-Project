@@ -12,7 +12,7 @@ import { TextureGenerator } from './TextureGenerator.js';
 let camera, scene, renderer;
 let land, skyDome, moon;
 let directionalLight, lightOn = true;
-let tree;
+let tree, house;
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -20,13 +20,16 @@ let tree;
 function createScene() {
     scene = new THREE.Scene();
 
+    scene.add(new THREE.AxesHelper(200));
+
     createLights();
     createSkyDome();
     createMoon();
     createField();
     createTree(50,20,70,0,1);
     createTree(20,15,30,Math.PI,2);
-    createTree(10,15,87,Math.PI/4,1.5);
+    createTree(10,10,87,Math.PI/4,1.5);
+    createHouse(0, 50, 0);
 }
 
 //////////////////////
@@ -36,7 +39,7 @@ function createScene() {
 function createCamera() {
     const aspect = window.innerWidth / window.innerHeight;
     camera = new THREE.PerspectiveCamera(50, aspect, 1, 1000);
-    camera.position.set(100, 90, 100);
+    camera.position.set(200, 200, 200);
     camera.lookAt(scene.position);
 }
 
@@ -158,6 +161,48 @@ function createTree(x, y, z, rotation, height) {
     tree.position.z = z;
     tree.rotation.y = rotation;
     tree.scale.y = height;
+}
+
+
+function createHouse(x, y, z) {
+    house = new THREE.Object3D();
+    const geometry = new THREE.BufferGeometry();
+
+    const vertices = new Float32Array( [
+    //////////////// PAREDE DA PORTA
+    0.0, 0.0,  4.0,  // inferior esquerdo
+    0.0, 7.0,  4.0,  // superior esquerdo
+    0.0,  7.0,  22.0, // superior direito
+	0.0,  0.0,  22.0,  // inferior direito
+    ///////////////// PAREDE DO BANCO
+    0.0, 0.0,  22.0,  // inferior esquerdo
+    0.0, 7.0,  22.0,  // superior esquerdo
+    -8.0,  7.0,  22.0, // superior direito
+	-8.0,  0.0, 22.0,  // inferior direito
+    ///////////////// PILAR 1
+    -8.0, 0.0,  22.0,  // inferior esquerdo
+    -8.0, 5.0,  22.0,  // superior esquerdo
+    -10.0,  4.0,  22.0, // superior direito
+	-10.0,  0.0, 22.0,  // inferior direito
+] );
+
+    const indices = [
+	    0, 1, 2,
+	    2, 3, 0,
+        4, 5, 6,
+	    6, 7, 4,
+        8, 9, 10,
+	    10, 11, 8,
+    ];
+
+    geometry.setIndex( indices );
+    
+    geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+    const material = new THREE.MeshStandardMaterial( { color: 0xff0000 } );
+    const mesh = new THREE.Mesh( geometry, material );
+    house.add(mesh);
+    house.position.set(x, y, z);
+    scene.add(house);
 }
 
 
