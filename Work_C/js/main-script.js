@@ -12,6 +12,7 @@ import { TextureGenerator } from './TextureGenerator.js';
 let camera, scene, renderer;
 let land, skyDome, moon;
 let directionalLight, lightOn = true;
+let tree;
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -23,6 +24,9 @@ function createScene() {
     createSkyDome();
     createMoon();
     createField();
+    createTree(50,20,70,0,1);
+    createTree(20,15,30,Math.PI,2);
+    createTree(10,15,87,Math.PI/4,1.5);
 }
 
 //////////////////////
@@ -114,6 +118,46 @@ function createSkyDome() {
 
     skyDome = new THREE.Mesh(geometry, material);
     scene.add(skyDome);
+}
+
+////////////////////////////////////////////////////
+
+function addTrunk(obj, x, y, z, rot, height, radius) {
+    const geometry = new THREE.CylinderGeometry(radius, radius, height, 10);
+    const material = new THREE.MeshBasicMaterial({ color: 0x4f2d0d});
+    const mesh = new THREE.Mesh(geometry, material);
+
+    mesh.rotation.z = rot;
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addLeaves(obj, x, y, z, height, radius) {
+    const geometry = new THREE.SphereGeometry(radius);
+    const material = new THREE.MeshBasicMaterial({ color: 0x26c751});
+    const mesh = new THREE.Mesh(geometry, material);
+
+    mesh.scale.y = height;
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+
+function createTree(x, y, z, rotation, height) {
+    tree = new THREE.Object3D();
+    addTrunk(tree, 2.3, 0, 0, (5 * Math.PI) / 36, 5, 1); // 25 degrees
+    addTrunk(tree, 0, 4.5, 0, Math.PI / 6, 5, 1);  // 30 degrees
+    addTrunk(tree, 3, 5, 0, (-2 * Math.PI) / 10, 5, 0.75); // -40 degrees
+    addTrunk(tree, 1, 6, 0, (-2 * Math.PI) / 10, 2, 0.5); // -40 degrees
+    addLeaves(tree, 0.8, 7.6, 0, 0.3, 6);
+    addLeaves(tree, 0.8, 9.5, 0, 0.3, 4);
+    scene.add(tree);
+
+    tree.position.x = x;
+    tree.position.y = y;
+    tree.position.z = z;
+    tree.rotation.y = rotation;
+    tree.scale.y = height;
 }
 
 
