@@ -199,7 +199,46 @@ function addWalls(obj) {
     obj.add(mesh);
 }
 
-function addPillar(obj, x, y, z) {
+function addRoofWall(obj) {
+    const geometry = new THREE.BufferGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+
+    const vertices = new Float32Array( [
+    ////////////////    SEGMENTO 1
+    -8.0, 7.0,  22.0,     // inferior esquerdo
+    -5.75, 8.0,  22.0,   // superior esquerdo
+    -2.25, 8.0,  22.0,  // superior direito
+	0.0, 7.0,  22.0,   // inferior direito
+    /////////////////   SEGMENTO 2
+    -5.75, 8.0,  22.0,    // inferior esquerdo
+    -4.5, 9.0,  22.0,    // superior esquerdo
+    -3.5, 9.0,  22.0,  // superior direito
+	-2.25, 8.0,  22.0,   // inferior direito
+    /////////////////   SEGMENTO 3
+    -4.5, 9.0,  22.0,    // inferior esquerdo
+    -4, 10.0,  22.0,    // superior
+	-3.5, 9.0,  22.0,   // inferior direito
+    ]);
+
+    const indices = [
+        ////////////////    PAREDE DA PORTA
+	    3, 2, 1,
+	    1, 0, 3,
+        /////////////////   PAREDE DO BANCO
+        7, 6, 5,
+	    5, 4, 7,
+        /////////////////   PAREDE DO BANCO
+        10, 9, 8,
+    ];
+
+    geometry.setIndex( indices );
+    
+    geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+    const mesh = new THREE.Mesh( geometry, material );
+    obj.add(mesh);
+}
+
+function addPillar(obj, z) {
     const geometry = new THREE.BufferGeometry();
     const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
 
@@ -228,32 +267,31 @@ function addPillar(obj, x, y, z) {
 
     const indices = [
         ////////////////    PARTE LATERAL ESQ
-	    0, 1, 2,
-	    2, 3, 0,
+	    3, 2, 1,
+	    1, 0, 3,
         /////////////////   PARTE LATERAL DIR
-        4, 5, 6,
-	    6, 7, 4,
+        7, 6, 5,
+	    5, 4, 7,
         /////////////////   PARTE FRONTAL
-        8, 9, 10,
-	    10, 11, 8,
+        11, 10, 9,
+	    9, 8, 11,
         /////////////////   PARTE SUPERIOR
-        12, 13, 14,
-	    14, 15, 12,
+        15, 14, 13,
+	    13, 12, 15,
     ];
 
     geometry.setIndex( indices );
     
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
     const mesh = new THREE.Mesh( geometry, material );
-    mesh.position.set(x, y, z);
+    mesh.position.set(0, 0, z);
     obj.add(mesh);
 }
 
 function addRoof(obj) {
     const geometry = new THREE.BufferGeometry();
     const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-    const vertices = new Float32Array( [
-    
+    const vertices = new Float32Array( [   
     ////////////////    TELHADO - SEGMENTO 1
     0.0, 7.0,  4.0,     // inferior esquerdo
     -2.25, 8.0,  4.0,     // superior esquerdo
@@ -317,35 +355,462 @@ function addRoof(obj) {
 
 function addChimney(obj) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
 
     const vertices = new Float32Array( [
-    /////////////////   PILAR 1 - PARTE LATERAL ESQ
+    /////////////////   CHAMINE - PARTE FRONTAL
     -1.0, 7.5,  8.0,   // inferior esquerdo
     -1.5, 11.0,  8.5,   // superior esquerdo
     -1.5,  11.0,  12.5, // superior direito
 	-1.0,  7.5, 13,  // inferior direito
-    /////////////////   PILAR 1 - PARTE LATERAL DIR
+    /////////////////   CHAMINE - PARTE LATERAL DIR
     -3.0, 7.5,  8.0,   // inferior esquerdo
     -3.5, 11.0,  8.5,   // superior esquerdo
     -1.5, 11.0,  8.5, // superior direito
 	-1.0, 7.5,  8.0,  // inferior direito
-    /////////////////   PILAR 1 - PARTE FRONTAL
+    /////////////////   CHAMINE - PARTE LATERAL ESQ
     -3.0, 7.5,  13.0,   // inferior esquerdo
     -3.5, 11.0,  12.5,   // superior esquerdo
     -1.5, 11.0,  12.5, // superior direito
 	-1.0, 7.5,  13.0,  // inferior direito
-    /////////////////   PILAR 1 - PARTE SUPERIOR
+    /////////////////   CHAMINE - PARTE FRONTAL SUPERIOR
     -1.5, 11.0,  8.5,   // inferior esquerdo
     -1.5, 13.0,  8.5,   // superior esquerdo
     -1.5,  13.0,  12.5, // superior direito
 	-1.5,  11.0,  12.5,  // inferior direito
-    /////////////////   PILAR 1 - PARTE SUPERIOR
+    /////////////////   CHAMINE - PARTE LATERAL ESQ SUPERIOR
     -3.5, 11.0,  12.5,  // inferior esquerdo
     -3.5, 13.0,  12.5,   // superior esquerdo
     -1.5, 13.0,  12.5, // superior direito
-	-1.5, 11.0,  12.5,  // inferior direito~
+	-1.5, 11.0,  12.5,  // inferior direito
+    /////////////////   CHAMINE - PARTE LATERAL DIR SUPERIOR
+    -3.5, 11.0,  8.5,  // inferior esquerdo
+    -3.5, 13.0,  8.5,   // superior esquerdo
+    -1.5, 13.0,  8.5, // superior direito
+	-1.5, 11.0,  8.5,  // inferior direito
+    /////////////////   CHAMINE - PARTE FRONTAL TOPO
+    -1.75, 13.0,  8.75,   // inferior esquerdo
+    -2.0, 13.5,  9.0,   // superior esquerdo
+    -2.0,  13.5,  12.0, // superior direito
+	-1.75,  13.0,  12.25,  // inferior direito
+    /////////////////   CHAMINE - PARTE LATERAL ESQ TOPO
+    -3.25, 13.0,  12.25,  // inferior esquerdo
+    -3.0, 13.5,  12.0,   // superior esquerdo
+    -2.0, 13.5,  12.0, // superior direito
+	-1.75, 13.0,  12.25,  // inferior direito
+    /////////////////   CHAMINE - PARTE LATERAL ESQ TOPO
+    -2.0, 13.5,  9.0,  // inferior esquerdo
+    -3.0, 13.5,  9.0,  // superior esquerdo
+    -3.0, 13.5,  12.0, // superior direito
+	-1.75, 13.0,  12.0,  // inferior direito
     ]);
+
+    const indices = [
+        ////////////////    CHAMINE - PARTE FRONTAL
+	    0, 1, 2,
+	    2, 3, 0,
+        /////////////////   CHAMINE - PARTE LATERAL DIR
+        4, 5, 6,
+	    6, 7, 4,
+        /////////////////   CHAMINE - PARTE LATERAL ESQ
+        11, 10, 9,
+	    9, 8, 11,
+        /////////////////   CHAMINE - PARTE FRONTAL SUPERIOR
+        12, 13, 14,
+	    14, 15, 12,
+        /////////////////   CHAMINE - PARTE LATERAL ESQ SUPERIOR
+        19, 18, 17,
+	    17, 16, 19,
+        /////////////////   CHAMINE - PARTE LATERAL DIR SUPERIOR
+        20, 21, 22,
+	    22, 23, 20,
+        /////////////////   CHAMINE - PARTE SUPERIOR
+        22, 17, 18,
+	    22, 21, 17,
+        /////////////////   CHAMINE - PARTE FRONTAL TOPO
+        24, 25, 26,
+	    26, 27, 24,
+        /////////////////   CHAMINE - PARTE LATERAL ESQ TOPO
+        31, 30, 29,
+	    29, 28, 31,
+        /////////////////   CHAMINE - PARTE SUPERIOR TOPO
+        32, 33, 34,
+	    34, 35, 32,
+    ];
+
+    geometry.setIndex( indices );
+    
+    geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+    const mesh = new THREE.Mesh( geometry, material );
+    obj.add(mesh);
+}
+
+function addArmrest(obj, x) {
+    const geometry = new THREE.BufferGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+
+    const vertices = new Float32Array( [
+    ////////////////    PARTE FRONTAL INFERIOR
+    -2.0, 0.0,  24.5,    // inferior esquerdo
+    -2.0, 1.5,  24.5,    // superior esquerdo
+    -2.5, 1.5,  24.5,  // superior direito
+	-2.5, 0.0,  24.5,   // inferior direito
+    /////////////////   PARTE PLANA INFERIOR
+    -2.0, 1.5,  24.5,    // inferior esquerdo
+    -2.0, 1.5,  23.0,   // superior esquerdo
+    -2.5, 1.5,  23.0,   // superior direito
+	-2.5, 1.5,  24.5,   // inferior direito
+    /////////////////   PARTE FRONTAL SUPERIOR
+    -2.0, 1.5,  23.0,    // inferior esquerdo
+    -2.0, 3.0,  23.0,   // superior esquerdo
+    -2.5, 3.0,  23.0,   // superior direito
+	-2.5, 1.5,  23.0,   // inferior direito
+    /////////////////   PARTE FRONTAL SUPERIOR
+    -2.0, 3.0,  23.0,    // inferior esquerdo
+    -2.0, 3.0,  22.0,   // superior esquerdo
+    -2.5, 3.0,  22.0,   // superior direito
+	-2.5, 3.0,  23.0,   // inferior direito
+
+    -2.0, 0.0, 22.0, 
+    
+    ]);
+
+    const indices = [
+        ////////////////    PARTE FRONTAL INFERIOR
+	    0, 1, 2,
+	    2, 3, 0,
+        ////////////////    PARTE PLANA INFERIOR
+	    4, 5, 6,
+	    6, 7, 4,
+        /////////////////   PARTE FRONTAL SUPERIOR
+        8, 9, 10,
+	    10, 11, 8,
+        /////////////////   PARTE PLANA SUPERIOR
+        12, 13, 14,
+	    14, 15, 12,
+        /////////////////   PARTE LATERAL
+        1, 0, 16,
+        5, 4, 16,
+        9, 8, 16,
+        13, 12, 16,
+    ];
+
+    geometry.setIndex( indices );
+    
+    geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+    const mesh = new THREE.Mesh( geometry, material );
+    mesh.position.set(x, 0, 0);
+    obj.add(mesh);
+}
+
+function addSeat(obj) {
+    const geometry = new THREE.BufferGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+
+    const vertices = new Float32Array( [
+    ////////////////    PARTE FRONTAL INFERIOR
+    -2.5, 0.0,  24.0,    // inferior esquerdo
+    -2.5, 1.0,  24.0,    // superior esquerdo
+    -5.5,  1.0,  24.0,  // superior direito
+	-5.5,  0.0, 24.0,   // inferior direito
+    /////////////////   ACENTO
+    -2.5, 1.0,  24.0,    // inferior esquerdo
+    -2.5, 1.0,  22.5,   // superior esquerdo
+    -5.5,  1.0,  22.5,   // superior direito
+	-5.5,  1.0,  24.0,   // inferior direito
+    /////////////////   PARTE FRONTAL SUPERIOR
+    -2.5, 1.0,  22.5,    
+	-5.5, 1.0,  22.5,   
+    -2.5, 2.8,  22.5,
+    -3.0, 3.0,  22.5,
+    -5.0, 3.0,  22.5,
+    -5.5, 2.8,  22.5,
+    /////////////////   PARTE SUPERIOR TOPO - SEG1
+    -3.0, 3.0,  22.5,
+    -2.5, 2.8,  22.5,
+    -2.5, 2.8,  22.0,
+    -3.0, 3.0,  22.0,
+    /////////////////   PARTE SUPERIOR TOPO - SEG2
+    -5.0, 3.0,  22.5,
+    -3.0, 3.0,  22.5,
+    -3.0, 3.0,  22.0,
+    -5.0, 3.0,  22.0,
+    /////////////////   PARTE SUPERIOR TOPO - SEG3
+    -5.5, 2.8,  22.5,
+    -5.0, 3.0,  22.5,
+    -5.0, 3.0,  22.0,
+    -5.5, 2.8,  22.0,
+    ]);
+
+    const indices = [
+        ////////////////    PARTE FRONTAL INFERIOR
+	    0, 1, 2,
+	    2, 3, 0,
+        ////////////////    ACENTO
+	    4, 5, 6,
+	    6, 7, 4,
+        /////////////////   PARTE FRONTAL SUPERIOR
+        8, 10, 9,
+        9, 10, 11,
+        9, 11, 12,
+        9, 12, 13,
+        /////////////////   PARTE SUPERIOR TOPO
+        14, 15, 16,
+	    16, 17, 14,
+        18, 19, 20,
+	    20, 21, 18,
+        22, 23, 24,
+	    24, 25, 22,
+    ];
+
+    geometry.setIndex( indices );
+    
+    geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+    const mesh = new THREE.Mesh( geometry, material );
+    obj.add(mesh);
+}
+
+function addBench(obj) {
+    addArmrest(obj, 0);
+    addArmrest(obj, -3.5);
+    addSeat(obj);
+}
+
+function addPole(obj, x) {
+    const geometry = new THREE.BufferGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+
+    const vertices = new Float32Array( [
+    ////////////////    BASE
+    0.0, 0.0, 25.5,  
+    -0.25, 0.0, 26.0,
+    -0.75, 0.0, 26.0,
+    -1.0, 0.0, 25.5,
+    -0.75, 0.0, 25.0,
+    -0.25, 0.0, 25.0,
+    /////////////////   TOP
+    0.0, 6.0, 25.5,  
+    -0.25, 6.0, 26.0,
+    -0.75, 6.0, 26.0,
+    -1.0, 6.0, 25.5,
+    -0.75, 6.0, 25.0,
+    -0.25, 6.0, 25.0,
+    ]);
+
+    const indices = [
+        ////////////////    SEG1
+	    6, 1, 0,
+	    6, 7, 1,
+        ////////////////    SEG2
+	    7, 2, 1,
+	    7, 8, 2,
+        ////////////////    SEG3
+	    8, 3, 2,
+	    8, 9, 3,
+        ////////////////    SEG4
+	    9, 4, 3,
+	    9, 10, 4,
+        ////////////////    SEG5
+	    10, 5, 4,
+	    10, 11, 5,
+        ////////////////    SEG6
+	    11, 0, 5,
+	    11, 6, 0,
+        
+    ];
+
+    geometry.setIndex( indices );
+    
+    geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+    const mesh = new THREE.Mesh( geometry, material );
+    mesh.position.set(x, 0, 0);
+    obj.add(mesh);
+}
+
+function addHangingRoof(obj) {
+    const geometry = new THREE.BufferGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+
+    const vertices = new Float32Array( [
+    ////////////////    BASE
+    0.0, 6.0, 26.0,     
+    -8.0, 6.0, 26.0,      
+	0.0, 6.0, 22.0,   
+    /////////////////   TOP
+    0.0, 7.0, 26.0,     
+    -8.0, 7.0, 26.0,
+    -8.0, 7.0, 22.0,     
+	0.0, 7.0, 22.0,    
+    ]);
+
+    const indices = [
+        ////////////////    SEG1
+	    0, 2, 3,
+	    2, 6, 3,
+        /////////////////   SEG2
+        3, 4, 1,
+        0, 3, 1,
+        /////////////////   SEG3
+        5, 4, 3,
+        3, 6, 5
+    ];
+
+    geometry.setIndex( indices );
+    
+    geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+    const mesh = new THREE.Mesh( geometry, material );
+    obj.add(mesh);
+}
+
+function addPorch(obj) {
+    addPole(obj, 0);
+    addPole(obj, -7);
+    addHangingRoof(obj);
+}
+
+function addDoor(obj) {
+    const geometry = new THREE.BufferGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+
+    const vertices = new Float32Array( [
+        0.0, 0.0, 19.0,     
+        0.0, 4.0, 19.0,      
+	    0.0, 4.0, 17.0, 
+        0.0, 0.0, 17.0, 
+    ]);
+
+    const indices = [
+	    2, 1, 0,
+	    0, 3, 2,
+    ];
+
+    geometry.setIndex( indices );
+    
+    geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+    const mesh = new THREE.Mesh( geometry, material );
+    obj.add(mesh);
+}
+
+function addWindow(obj, z) {
+    const geometry = new THREE.BufferGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+
+    const vertices = new Float32Array( [
+        0.0, 2.0, 9.0,     
+        0.0, 5.0, 9.0,      
+	    0.0, 5.0, 7.0, 
+        0.0, 2.0, 7.0, 
+    ]);
+
+    const indices = [
+	    2, 1, 0,
+	    0, 3, 2,
+    ];
+
+    geometry.setIndex( indices );
+    
+    geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+    const mesh = new THREE.Mesh( geometry, material );
+    mesh.position.set(0, 0, z);
+    obj.add(mesh);
+}
+
+function addCircularWindow(obj) {
+    const geometry = new THREE.BufferGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: false });
+
+    const vertices = new Float32Array( [
+        -4.0, 8.5, 22.0,     
+        -4.25, 8.25, 22.0, 
+        -4.25, 7.75, 22.0, 
+        -4.0, 7.5, 22.0,
+        -3.75, 7.75, 22.0, 
+        -3.75, 8.25, 22.0, 
+    ]);
+
+    const indices = [
+	    0, 1, 2,
+	    0, 2, 3,
+        0, 3, 4,
+        0, 4, 5,
+    ];
+
+    geometry.setIndex( indices );
+    
+    geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+    const mesh = new THREE.Mesh( geometry, material );
+    obj.add(mesh);
+}
+
+function addWrappingWalls(obj) {
+    const geometry = new THREE.BufferGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+
+    const vertices = new Float32Array( [
+    ////////////////    PAREDE DA PORTA
+    0.0, 0.0,  4.0,     // inferior esquerdo
+    0.0, 1.0,  4.0,     // superior esquerdo
+    0.0,  1.0,  22.0,   // superior direito
+	0.0,  0.0,  22.0,   // inferior direito
+    /////////////////   PAREDE DO BANCO
+    0.0, 0.0,  22.0,    // inferior esquerdo
+    0.0, 1.0,  22.0,    // superior esquerdo
+    -8.0, 1.0,  22.0,  // superior direito
+	-8.0, 0.0, 22.0,   // inferior direito
+    ]);
+
+    const indices = [
+        ////////////////    PAREDE DA PORTA
+	    0, 1, 2,
+	    2, 3, 0,
+        /////////////////   PAREDE DO BANCO
+        4, 5, 6,
+	    6, 7, 4,
+    ];
+
+    geometry.setIndex( indices );
+    
+    geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+    const mesh = new THREE.Mesh( geometry, material );
+    obj.add(mesh);
+}
+
+function addWrappingRoof(obj, z) {
+    const geometry = new THREE.BufferGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    const vertices = new Float32Array( [   
+    ////////////////    TELHADO - SEGMENTO 1
+    0.0, 7.0,  4.0,     // inferior esquerdo
+    -2.25, 8.0,  4.0,     // superior esquerdo
+    -2.25, 8.0,  4.5,   // superior direito
+	0.0, 7.0,  4.5,   // inferior direito
+    ////////////////    TELHADO - SEGMENTO 2
+    -2.25, 8.0,  4.0,     // inferior esquerdo
+    -3.5, 9.0,  4.0,     // superior esquerdo
+    -3.5, 9.0,  4.5,   // superior direito
+	-2.25, 8.0,  4.5,   // inferior direito
+    ////////////////    TELHADO - SEGMENTO 3
+    -3.5, 9.0,  4.0,     // inferior esquerdo
+    -4, 10.0,  4.0,     // superior esquerdo
+    -4, 10.0,  4.5,   // superior direito
+	-3.5, 9.0,  4.5,   // inferior direito
+
+    ////////////////    TELHADO - SEGMENTO 4
+    -8.0, 7.0,  4.0,     // inferior esquerdo
+    -5.75, 8.0,  4.0,     // superior esquerdo
+    -5.75, 8.0,  4.5,   // superior direito
+	-8.0, 7.0,  4.5,   // inferior direito
+    ////////////////    TELHADO - SEGMENTO 5
+    -5.75, 8.0,  4.0,     // inferior esquerdo
+    -4.5, 9.0,  4.0,     // superior esquerdo
+    -4.5, 9.0,  4.5,   // superior direito
+	-5.75, 8.0,  4.5,   // inferior direito
+    ////////////////    TELHADO - SEGMENTO 6
+    -4.5, 9.0,  4.0,     // inferior esquerdo
+    -4, 10.0,  4.0,     // superior esquerdo
+    -4, 10.0,  4.5,   // superior direito
+	-4.5, 9.0,  4.5,   // inferior direito
+] );
 
     const indices = [
         ////////////////    PARTE LATERAL ESQ
@@ -363,24 +828,42 @@ function addChimney(obj) {
         /////////////////   PARTE SUPERIOR
         16, 17, 18,
 	    18, 19, 16,
+        /////////////////   PARTE SUPERIOR
+        20, 21, 22,
+	    22, 23, 20,
     ];
 
     geometry.setIndex( indices );
     
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
     const mesh = new THREE.Mesh( geometry, material );
+    mesh.position.set(0, 0, z);
     obj.add(mesh);
 }
 
+function addDetails(obj) {
+    addDoor(obj);
+    addWindow(obj, 0);
+    addWindow(obj, 3);
+    addCircularWindow(obj);
+    addWrappingWalls(obj);
+    addWrappingRoof(obj, 0);
+    addWrappingRoof(obj, 17.5);
+}
 
 function createHouse(x, y, z) {
     house = new THREE.Object3D();
     addWalls(house);
-    addPillar(house, 0,0,0);
-    addPillar(house, 0,0,-7);
-    addPillar(house, 0,0,-16);
+    addRoofWall(house);
     addRoof(house);
     addChimney(house);
+    addBench(house);
+    addPillar(house, 0);
+    addPillar(house, -7);
+    addPillar(house, -16);
+    addPorch(house);
+    addDetails(house);
+    addDoor(house);
     house.position.set(x, y, z);
     scene.add(house);
 }
