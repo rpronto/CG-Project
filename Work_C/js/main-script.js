@@ -166,10 +166,9 @@ function createTree(x, y, z, rotation, height) {
     tree.scale.y = height;
 }
 
-
-function createHouse(x, y, z) {
-    house = new THREE.Object3D();
+function addWalls(obj) {
     const geometry = new THREE.BufferGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
 
     const vertices = new Float32Array( [
     ////////////////    PAREDE DA PORTA
@@ -182,7 +181,29 @@ function createHouse(x, y, z) {
     0.0, 7.0,  22.0,    // superior esquerdo
     -8.0,  7.0,  22.0,  // superior direito
 	-8.0,  0.0, 22.0,   // inferior direito
+    ]);
 
+    const indices = [
+        ////////////////    PAREDE DA PORTA
+	    0, 1, 2,
+	    2, 3, 0,
+        /////////////////   PAREDE DO BANCO
+        4, 5, 6,
+	    6, 7, 4,
+    ];
+
+    geometry.setIndex( indices );
+    
+    geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+    const mesh = new THREE.Mesh( geometry, material );
+    obj.add(mesh);
+}
+
+function addPillar(obj, x, y, z) {
+    const geometry = new THREE.BufferGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+
+    const vertices = new Float32Array( [
     /////////////////   PILAR 1 - PARTE LATERAL ESQ
     0.0, 0.0,  22.0,   // inferior esquerdo
     0.0, 5.0,  22.0,   // superior esquerdo
@@ -202,50 +223,37 @@ function createHouse(x, y, z) {
     2.0,  4.0,  22.0,   // inferior esquerdo
     0.0,  5.0,  22.0,   // superior esquerdo
     0.0,  5.0,  20.0, // superior direito
-	2.0,  0.0, 20.0,  // inferior direito
+	2.0,  0.0, 20.0,  // inferior direito~
+    ]);
 
-    /////////////////   PILAR 2 - PARTE LATERAL ESQ
-    0.0, 0.0,  15.0,   // inferior esquerdo
-    0.0, 5.0,  15.0,   // superior esquerdo
-    2.0,  4.0,  15.0, // superior direito
-	2.0,  0.0, 15.0,  // inferior direito
-    /////////////////   PILAR 2 - PARTE LATERAL DIR
-    0.0, 0.0,  13.0,   // inferior esquerdo
-    0.0, 5.0,  13.0,   // superior esquerdo
-    2.0,  4.0,  13.0, // superior direito
-	2.0,  0.0, 13.0,  // inferior direito
-    /////////////////   PILAR 2 - PARTE FRONTAL
-    2.0,  0.0,  15.0,   // inferior esquerdo
-    2.0,  4.0,  15.0,   // superior esquerdo
-    2.0,  4.0,  13.0, // superior direito
-	2.0,  0.0, 13.0,  // inferior direito
-    /////////////////   PILAR 2 - PARTE SUPERIOR
-    2.0,  4.0,  15.0,   // inferior esquerdo
-    0.0,  5.0,  15.0,   // superior esquerdo
-    0.0,  5.0,  13.0, // superior direito
-	2.0,  0.0, 13.0,  // inferior direito
+    const indices = [
+        ////////////////    PARTE LATERAL ESQ
+	    0, 1, 2,
+	    2, 3, 0,
+        /////////////////   PARTE LATERAL DIR
+        4, 5, 6,
+	    6, 7, 4,
+        /////////////////   PARTE FRONTAL
+        8, 9, 10,
+	    10, 11, 8,
+        /////////////////   PARTE SUPERIOR
+        12, 13, 14,
+	    14, 15, 12,
+    ];
 
-    /////////////////   PILAR 3 - PARTE LATERAL ESQ
-    0.0, 0.0,  6.0,   // inferior esquerdo
-    0.0, 5.0,  6.0,   // superior esquerdo
-    2.0,  4.0,  6.0, // superior direito
-	2.0,  0.0, 6.0,  // inferior direito
-    /////////////////   PILAR 3 - PARTE LATERAL DIR
-    0.0, 0.0,  4.0,   // inferior esquerdo
-    0.0, 5.0,  4.0,   // superior esquerdo
-    2.0,  4.0,  4.0, // superior direito
-	2.0,  0.0, 4.0,  // inferior direito
-    /////////////////   PILAR 3 - PARTE FRONTAL
-    2.0,  0.0,  6.0,   // inferior esquerdo
-    2.0,  4.0,  6.0,   // superior esquerdo
-    2.0,  4.0,  4.0, // superior direito
-	2.0,  0.0, 4.0,  // inferior direito
-    /////////////////   PILAR 3 - PARTE SUPERIOR
-    2.0,  4.0,  6.0,   // inferior esquerdo
-    0.0,  5.0,  6.0,   // superior esquerdo
-    0.0,  5.0,  4.0, // superior direito
-	2.0,  0.0, 4.0,  // inferior direito
+    geometry.setIndex( indices );
+    
+    geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+    const mesh = new THREE.Mesh( geometry, material );
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
 
+function addRoof(obj) {
+    const geometry = new THREE.BufferGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    const vertices = new Float32Array( [
+    
     ////////////////    TELHADO - SEGMENTO 1
     0.0, 7.0,  4.0,     // inferior esquerdo
     -2.25, 8.0,  4.0,     // superior esquerdo
@@ -280,75 +288,99 @@ function createHouse(x, y, z) {
 ] );
 
     const indices = [
-        ////////////////    PAREDE DA PORTA
+        ////////////////    PARTE LATERAL ESQ
 	    0, 1, 2,
 	    2, 3, 0,
-        /////////////////   PAREDE DO BANCO
+        /////////////////   PARTE LATERAL DIR
         4, 5, 6,
 	    6, 7, 4,
-        /////////////////   PILAR 1 - PARTE LATERAL ESQ
+        /////////////////   PARTE FRONTAL
         8, 9, 10,
 	    10, 11, 8,
-        /////////////////   PILAR 1 - PARTE LATERAL DIR
+        /////////////////   PARTE SUPERIOR
         12, 13, 14,
 	    14, 15, 12,
-        /////////////////   PILAR 1 - PARTE FRONTAL
+        /////////////////   PARTE SUPERIOR
         16, 17, 18,
 	    18, 19, 16,
-        /////////////////   PILAR 1 - PARTE SUPERIOR
+        /////////////////   PARTE SUPERIOR
         20, 21, 22,
 	    22, 23, 20,
-        /////////////////   PILAR 2 - PARTE LATERAL ESQ
-        24, 25, 26,
-	    26, 27, 24,
-        /////////////////   PILAR 2 - PARTE LATERAL DIR
-        28, 29, 30,
-	    30, 31, 28,
-        /////////////////   PILAR 2 - PARTE FRONTAL
-        32, 33, 34,
-	    34, 35, 32,
-        /////////////////   PILAR 2 - PARTE SUPERIOR
-        36, 37, 38,
-	    38, 39, 36,
-        /////////////////   PILAR 3 - PARTE LATERAL ESQ
-        40, 41, 42,
-	    42, 43, 40,
-        /////////////////   PILAR 3 - PARTE LATERAL DIR
-        44, 45, 46,
-	    46, 47, 44,
-        /////////////////   PILAR 3 - PARTE FRONTAL
-        48, 49, 50,
-	    50, 51, 48,
-        /////////////////   PILAR 3 - PARTE SUPERIOR
-        52, 53, 54,
-	    54, 55, 52,
-        /////////////////   TELHADO - SEGMENTO 1
-        56, 57, 58,
-	    58, 59, 56,
-        /////////////////   TELHADO - SEGMENTO 2
-        60, 61, 62,
-	    62, 63, 60,
-        /////////////////   TELHADO - SEGMENTO 3
-        64, 65, 66,
-	    66, 67, 64,
-        /////////////////   TELHADO - SEGMENTO 4
-        68, 69, 70,
-	    70, 71, 68,
-        /////////////////   TELHADO - SEGMENTO 5
-        72, 73, 74,
-	    74, 75, 72,
-        /////////////////   TELHADO - SEGMENTO 6
-        76, 77, 78,
-	    78, 79, 76,
-        
     ];
 
     geometry.setIndex( indices );
     
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
     const mesh = new THREE.Mesh( geometry, material );
-    house.add(mesh);
+    obj.add(mesh);
+}
+
+function addChimney(obj) {
+    const geometry = new THREE.BufferGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+
+    const vertices = new Float32Array( [
+    /////////////////   PILAR 1 - PARTE LATERAL ESQ
+    -1.0, 7.5,  8.0,   // inferior esquerdo
+    -1.5, 11.0,  8.5,   // superior esquerdo
+    -1.5,  11.0,  12.5, // superior direito
+	-1.0,  7.5, 13,  // inferior direito
+    /////////////////   PILAR 1 - PARTE LATERAL DIR
+    -3.0, 7.5,  8.0,   // inferior esquerdo
+    -3.5, 11.0,  8.5,   // superior esquerdo
+    -1.5, 11.0,  8.5, // superior direito
+	-1.0, 7.5,  8.0,  // inferior direito
+    /////////////////   PILAR 1 - PARTE FRONTAL
+    -3.0, 7.5,  13.0,   // inferior esquerdo
+    -3.5, 11.0,  12.5,   // superior esquerdo
+    -1.5, 11.0,  12.5, // superior direito
+	-1.0, 7.5,  13.0,  // inferior direito
+    /////////////////   PILAR 1 - PARTE SUPERIOR
+    -1.5, 11.0,  8.5,   // inferior esquerdo
+    -1.5, 13.0,  8.5,   // superior esquerdo
+    -1.5,  13.0,  12.5, // superior direito
+	-1.5,  11.0,  12.5,  // inferior direito
+    /////////////////   PILAR 1 - PARTE SUPERIOR
+    -3.5, 11.0,  12.5,  // inferior esquerdo
+    -3.5, 13.0,  12.5,   // superior esquerdo
+    -1.5, 13.0,  12.5, // superior direito
+	-1.5, 11.0,  12.5,  // inferior direito~
+    ]);
+
+    const indices = [
+        ////////////////    PARTE LATERAL ESQ
+	    0, 1, 2,
+	    2, 3, 0,
+        /////////////////   PARTE LATERAL DIR
+        4, 5, 6,
+	    6, 7, 4,
+        /////////////////   PARTE FRONTAL
+        8, 9, 10,
+	    10, 11, 8,
+        /////////////////   PARTE SUPERIOR
+        12, 13, 14,
+	    14, 15, 12,
+        /////////////////   PARTE SUPERIOR
+        16, 17, 18,
+	    18, 19, 16,
+    ];
+
+    geometry.setIndex( indices );
+    
+    geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+    const mesh = new THREE.Mesh( geometry, material );
+    obj.add(mesh);
+}
+
+
+function createHouse(x, y, z) {
+    house = new THREE.Object3D();
+    addWalls(house);
+    addPillar(house, 0,0,0);
+    addPillar(house, 0,0,-7);
+    addPillar(house, 0,0,-16);
+    addRoof(house);
+    addChimney(house);
     house.position.set(x, y, z);
     scene.add(house);
 }
