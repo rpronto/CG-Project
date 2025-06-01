@@ -15,7 +15,17 @@ let controls;
 let camera, scene, renderer;
 let land, skyDome, moon;
 let directionalLight, lightOn = true;
-let tree, house;
+let spotLight, spotLightOn = true;
+let pointLightsOn = true;
+let ovniRotation = 0;
+let tree, house, ovni;
+const speed = 0.5;
+let keysPressed = {
+    ArrowUp: false,
+    ArrowDown: false,
+    ArrowLeft: false,
+    ArrowRight: false,
+};
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -33,6 +43,7 @@ function createScene() {
     createTree(20,15,30,Math.PI,2);
     createTree(10,10,87,Math.PI/4,1.5);
     createHouse(70, 50, 0);
+    createOvni(0, 50, 0);
 }
 
 //////////////////////
@@ -868,6 +879,65 @@ function createHouse(x, y, z) {
     scene.add(house);
 }
 
+function addOvniBody(obj, x, y, z) {
+    const material = new THREE.MeshBasicMaterial({ color: 0x808080, wireframe: true });
+    const geometry = new THREE.SphereGeometry(5, 32, 32);
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.scale.y = 0.2
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addOvniCockpit(obj, x, y, z) {
+    const material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
+    const geometry = new THREE.SphereGeometry(2, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2);
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addOvniLight(obj,  x, y, z) {
+    const material = new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: true });
+    const geometry = new THREE.SphereGeometry(0.5, 32, 32);
+    const mesh = new THREE.Mesh(geometry, material);
+    const light = new THREE.PointLight( 0xffff00, 5, 100 );
+    mesh.add(light);
+    mesh.position.set(x, y, z);
+    obj.add(mesh);
+}
+
+function addOvniSpotlight(obj, x, y, z) {
+    const material = new THREE.MeshBasicMaterial({ color: 0xcbc7bb, wireframe: true });
+    const geometry = new THREE.CylinderGeometry(2, 2, 0.5, 32);
+    const mesh = new THREE.Mesh(geometry, material);
+    spotLight = new THREE.SpotLight( 0xffffff, 30, 100, Math.PI / 8);
+    mesh.add(spotLight);
+    mesh.position.set(x, y, z);
+    const target = new THREE.Object3D();
+    target.position.set(x, y - 5, z);
+    obj.add(target);
+    spotLight.target = target;
+    obj.add(mesh);
+}
+
+function createOvni(x, y, z) {
+    ovni = new THREE.Object3D();
+    
+    addOvniBody(ovni, 0, 0, 0);
+    addOvniCockpit(ovni, 0, 0.5, 0);
+    addOvniLight(ovni, 2.5, -0.5, 2.5);
+    addOvniLight(ovni, -2.5, -0.5, -2.5);
+    addOvniLight(ovni, -2.5, -0.5, 2.5);
+    addOvniLight(ovni, 2.5, -0.5, -2.5);
+    addOvniLight(ovni, 3.5, -0.5, 0);
+    addOvniLight(ovni, 0, -0.5, 3.5);
+    addOvniLight(ovni, 0, -0.5, -3.5);
+    addOvniLight(ovni, -3.5, -0.5, 0);
+    addOvniSpotlight(ovni, 0, -1, 0);
+
+    ovni.position.set(x, y, z);
+    scene.add(ovni);
+}
 
 //////////////////////
 /* CHECK COLLISIONS */
@@ -883,6 +953,17 @@ function handleCollisions() {}
 /* UPDATE */
 ////////////
 function update() {
+    const ovniVector = new THREE.Vector3();
+    if (keysPressed.ArrowUp)    ovniVector.z += 1;
+    if (keysPressed.ArrowDown)  ovniVector.z -= 1;
+    if (keysPressed.ArrowRight) ovniVector.x += 1;
+    if (keysPressed.ArrowLeft)  ovniVector.x -= 1;
+    ovniVector.normalize();
+    if (ovni) ovni.position.add(ovniVector.multiplyScalar(speed));
+
+    ovniRotation += 0.01
+    if (ovni) ovni.rotation.y = ovniRotation;
+
     // Retirar depois, só para facilitar a construção
     if (!renderer.xr.isPresenting && controls) {
         controls.update();
@@ -937,7 +1018,13 @@ function onResize() {}
 /* KEY DOWN CALLBACK */
 ///////////////////////
 function onKeyDown(e) {
-    let key = e.key.toLowerCase();
+    let key = e.key;
+    if (!key.startsWith('Arrow')) {
+        key = key.toLowerCase();
+    }
+    if (key in keysPressed) 
+        keysPressed[key] = true;
+
     switch (key) {
         case '1': 
             if (land) {
@@ -957,13 +1044,37 @@ function onKeyDown(e) {
             lightOn = !lightOn;
             directionalLight.visible = lightOn;
             break;
+        case 's':
+            spotLightOn = !spotLightOn;
+            if (spotLight) {
+                spotLight.visible = spotLightOn;
+            }
+            break;
+        case 'p':
+            pointLightsOn = !pointLightsOn;
+            if (ovni) {
+                ovni.traverse((child) => {
+                    if (child instanceof THREE.PointLight) {
+                        child.visible = pointLightsOn;
+                 }
+                });
+            }
+            break;
+
     }
 }
 
 ///////////////////////
 /* KEY UP CALLBACK */
 ///////////////////////
-function onKeyUp(e) {}
+function onKeyUp(e) {
+    let key = e.key;
+     if (!key.startsWith('Arrow')) {
+        key = key.toLowerCase();
+    }
+    if (key in keysPressed) 
+        keysPressed[key] = false;
+}
 
 init();
 animate();
