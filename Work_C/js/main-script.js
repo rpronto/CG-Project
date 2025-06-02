@@ -19,6 +19,7 @@ let spotLight, spotLightOn = true;
 let pointLightsOn = true;
 let ovniRotation = 0;
 let tree, house, ovni;
+let trees = [];
 const speed = 0.5;
 let keysPressed = {
     ArrowUp: false,
@@ -26,6 +27,21 @@ let keysPressed = {
     ArrowLeft: false,
     ArrowRight: false,
 };
+let materials = {};
+let currentShading = 'gouraud';
+let COLORS = {
+    ovniBody: new THREE.Color(0x808080),
+    ovniCockpit: new THREE.Color(0xffffff),
+    ovniLight: new THREE.Color(0xffff00),
+    ovniSpotLight: new THREE.Color(0xcbc7bb),
+    treeLeaves: new THREE.Color(0x26c751),
+    treeTrunk: new THREE.Color(0x966920),
+    houseWall: new THREE.Color(0xf0f7f7),
+    houseRoof: new THREE.Color(0xf0b756),
+    houseWindow: new THREE.Color(0x4b8ad6),
+    housePole: new THREE.Color(0x966920),
+    houseDoor: new THREE.Color(0x99431f),
+}
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -46,7 +62,7 @@ function createScene() {
     createTree(70,15,-25,2*Math.PI/3,2.5);
     createTree(-70,15,60,Math.PI/2,1.3);
     createHouse(20, 18, -40);
-    createOvni(0, 50, 0);
+    createOvni(0, 60, 0);
 }
 
 //////////////////////
@@ -65,8 +81,8 @@ function createCamera() {
 /////////////////////
 
 function createLights() {
-    directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(50, 100, 50);
+    directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(75, 60, -65);
     directionalLight.target.position.set(0, 0, 0); 
     scene.add(directionalLight);
     scene.add(directionalLight.target);
@@ -144,9 +160,8 @@ function createSkyDome() {
 
 function addTrunk(obj, x, y, z, rot, height, radius) {
     const geometry = new THREE.CylinderGeometry(radius, radius, height, 10);
-    const material = new THREE.MeshStandardMaterial({ color: 0x966920, roughness:0.5, metalness:0.1});
-    const mesh = new THREE.Mesh(geometry, material);
-
+    const mesh = new THREE.Mesh(geometry, getMaterial(currentShading, COLORS.treeTrunk));
+    mesh.name = "treeTrunk";
     mesh.rotation.z = rot;
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -154,9 +169,8 @@ function addTrunk(obj, x, y, z, rot, height, radius) {
 
 function addLeaves(obj, x, y, z, height, radius) {
     const geometry = new THREE.SphereGeometry(radius);
-    const material = new THREE.MeshStandardMaterial({ color: 0x26c751, roughness:0.5, metalness:0.1});
-    const mesh = new THREE.Mesh(geometry, material);
-
+    const mesh = new THREE.Mesh(geometry, getMaterial(currentShading, COLORS.treeLeaves));
+    mesh.name = "treeLeaf";
     mesh.scale.y = height;
     mesh.position.set(x, y, z);
     obj.add(mesh);
@@ -178,6 +192,7 @@ function createTree(x, y, z, rotation, height) {
     tree.position.z = z;
     tree.rotation.y = rotation;
     tree.scale.y = height;
+    trees.push(tree);
 }
 
 function addWalls(obj) {
@@ -209,7 +224,9 @@ function addWalls(obj) {
     geometry.setIndex( indices );
     
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const mesh = new THREE.Mesh( geometry, material );
+    geometry.computeVertexNormals();
+    const mesh = new THREE.Mesh( geometry, getMaterial(currentShading, COLORS.houseWall) );
+    mesh.name = "houseWall";
     obj.add(mesh);
 }
 
@@ -248,7 +265,9 @@ function addRoofWall(obj) {
     geometry.setIndex( indices );
     
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const mesh = new THREE.Mesh( geometry, material );
+    geometry.computeVertexNormals();
+    const mesh = new THREE.Mesh( geometry, getMaterial(currentShading, COLORS.houseWall));
+    mesh.name = "houseRoofWall";
     obj.add(mesh);
 }
 
@@ -297,7 +316,9 @@ function addPillar(obj, z) {
     geometry.setIndex( indices );
     
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const mesh = new THREE.Mesh( geometry, material );
+    geometry.computeVertexNormals();
+    const mesh = new THREE.Mesh( geometry, getMaterial(currentShading, COLORS.houseWall) );
+    mesh.name = "housePillar";
     mesh.position.set(0, 0, z);
     obj.add(mesh);
 }
@@ -363,7 +384,9 @@ function addRoof(obj) {
     geometry.setIndex( indices );
     
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const mesh = new THREE.Mesh( geometry, material );
+    geometry.computeVertexNormals();
+    const mesh = new THREE.Mesh( geometry, getMaterial(currentShading, COLORS.houseRoof) );
+    mesh.name = "houseRoof";
     obj.add(mesh);
 }
 
@@ -455,7 +478,9 @@ function addChimney(obj) {
     geometry.setIndex( indices );
     
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const mesh = new THREE.Mesh( geometry, material );
+    geometry.computeVertexNormals();
+    const mesh = new THREE.Mesh( geometry, getMaterial(currentShading, COLORS.houseWall) );
+    mesh.name = "houseChimney";
     obj.add(mesh);
 }
 
@@ -512,7 +537,9 @@ function addArmrest(obj, x) {
     geometry.setIndex( indices );
     
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const mesh = new THREE.Mesh( geometry, material );
+    geometry.computeVertexNormals();
+    const mesh = new THREE.Mesh( geometry, getMaterial(currentShading, COLORS.houseWindow) );
+    mesh.name = "houseArmrest";
     mesh.position.set(x, 0, 0);
     obj.add(mesh);
 }
@@ -580,7 +607,9 @@ function addSeat(obj) {
     geometry.setIndex( indices );
     
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const mesh = new THREE.Mesh( geometry, material );
+    geometry.computeVertexNormals();
+    const mesh = new THREE.Mesh( geometry, getMaterial(currentShading, COLORS.houseWall) );
+    mesh.name = "houseSeat";
     obj.add(mesh);
 }
 
@@ -636,7 +665,9 @@ function addPole(obj, x) {
     geometry.setIndex( indices );
     
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const mesh = new THREE.Mesh( geometry, material );
+    geometry.computeVertexNormals();
+    const mesh = new THREE.Mesh( geometry, getMaterial(currentShading, COLORS.housePole) );
+    mesh.name = "housePole";
     mesh.position.set(x, 0, 0);
     obj.add(mesh);
 }
@@ -672,7 +703,9 @@ function addHangingRoof(obj) {
     geometry.setIndex( indices );
     
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const mesh = new THREE.Mesh( geometry, material );
+    geometry.computeVertexNormals();
+    const mesh = new THREE.Mesh( geometry, getMaterial(currentShading, COLORS.housePole) );
+    mesh.name = "houseHangingRoof";
     obj.add(mesh);
 }
 
@@ -701,7 +734,9 @@ function addDoor(obj) {
     geometry.setIndex( indices );
     
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const mesh = new THREE.Mesh( geometry, material );
+    geometry.computeVertexNormals();
+    const mesh = new THREE.Mesh( geometry, getMaterial(currentShading, COLORS.houseDoor) );
+    mesh.name = "houseDoor";
     mesh.position.x += 0.02;
     obj.add(mesh);
 }
@@ -725,7 +760,9 @@ function addWindow(obj, z) {
     geometry.setIndex( indices );
     
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const mesh = new THREE.Mesh( geometry, material );
+    geometry.computeVertexNormals();
+    const mesh = new THREE.Mesh( geometry, getMaterial(currentShading, COLORS.houseWindow) );
+    mesh.name = "houseWindow";
     mesh.position.set(0, 0, z);
     mesh.position.x += 0.01;
     obj.add(mesh);
@@ -754,7 +791,9 @@ function addCircularWindow(obj) {
     geometry.setIndex( indices );
     
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const mesh = new THREE.Mesh( geometry, material );
+    geometry.computeVertexNormals();
+    const mesh = new THREE.Mesh( geometry, getMaterial(currentShading, COLORS.houseWindow) );
+    mesh.name = "houseCircularWindow";
     mesh.position.z += 0.01;
     obj.add(mesh);
 }
@@ -788,7 +827,9 @@ function addWrappingWalls(obj) {
     geometry.setIndex( indices );
     
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const mesh = new THREE.Mesh( geometry, material );
+    geometry.computeVertexNormals();
+    const mesh = new THREE.Mesh( geometry, getMaterial(currentShading, COLORS.houseWindow) );
+    mesh.name = "houseWrappingWalls";
     mesh.position.x += 0.01;
     mesh.position.z += 0.01;
     obj.add(mesh);
@@ -855,7 +896,9 @@ function addWrappingRoof(obj, z) {
     geometry.setIndex( indices );
     
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const mesh = new THREE.Mesh( geometry, material );
+    geometry.computeVertexNormals();
+    const mesh = new THREE.Mesh( geometry, getMaterial(currentShading, COLORS.houseWall) );
+    mesh.name = "houseWrappingRoof";
     mesh.position.set(0, 0, z);
     mesh.position.y += 0.01;
     obj.add(mesh);
@@ -890,36 +933,36 @@ function createHouse(x, y, z) {
 }
 
 function addOvniBody(obj, x, y, z) {
-    const material = new THREE.MeshBasicMaterial({ color: 0x808080});
     const geometry = new THREE.SphereGeometry(5, 32, 32);
-    const mesh = new THREE.Mesh(geometry, material);
+    const mesh = new THREE.Mesh(geometry, getMaterial(currentShading, COLORS.ovniBody));
+    mesh.name = "ovniBody";
     mesh.scale.y = 0.2
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
 
 function addOvniCockpit(obj, x, y, z) {
-    const material = new THREE.MeshBasicMaterial({ color: 0xffffff});
     const geometry = new THREE.SphereGeometry(2, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2);
-    const mesh = new THREE.Mesh(geometry, material);
+    const mesh = new THREE.Mesh(geometry, getMaterial(currentShading, COLORS.ovniCockpit));
+    mesh.name = "ovniCockpit";
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
 
 function addOvniLight(obj,  x, y, z) {
-    const material = new THREE.MeshBasicMaterial({ color: 0xffff00});
     const geometry = new THREE.SphereGeometry(0.5, 32, 32);
-    const mesh = new THREE.Mesh(geometry, material);
-    const light = new THREE.PointLight( 0xffff00, 5, 100 );
+    const mesh = new THREE.Mesh(geometry, getMaterial(currentShading, COLORS.ovniLight));
+    const light = new THREE.PointLight( 0xffff00, 2, 100 );
+    mesh.name = "ovniLight";
     mesh.add(light);
     mesh.position.set(x, y, z);
     obj.add(mesh);
 }
 
 function addOvniSpotlight(obj, x, y, z) {
-    const material = new THREE.MeshBasicMaterial({ color: 0xcbc7bb});
     const geometry = new THREE.CylinderGeometry(2, 2, 0.5, 32);
-    const mesh = new THREE.Mesh(geometry, material);
+    const mesh = new THREE.Mesh(geometry, getMaterial(currentShading, COLORS.ovniSpotLight));
+    mesh.name = "ovniSpotLight";
     spotLight = new THREE.SpotLight( 0xffffff, 30, 100, Math.PI / 8);
     mesh.add(spotLight);
     mesh.position.set(x, y, z);
@@ -946,7 +989,64 @@ function createOvni(x, y, z) {
     addOvniSpotlight(ovni, 0, -1, 0);
 
     ovni.position.set(x, y, z);
+    ovni.scale.set(2, 2, 2);
     scene.add(ovni);
+}
+
+function setShading(type) {
+    currentShading = type;
+    if (ovni)  ovni.traverse(obj => {
+        if (obj.isMesh) {
+            if (obj.name == "ovniBody") {
+                obj.material = getMaterial(type, COLORS.ovniBody);
+            } else if (obj.name == "ovniCockpit") {
+                obj.material = getMaterial(type, COLORS.ovniCockpit);
+            } else if (obj.name == "ovniLight") {
+                obj.material = getMaterial(type, COLORS.ovniLight);
+            } else if (obj.name == "ovniSpotLight") {
+                obj.material = getMaterial(type, COLORS.ovniSpotLight);
+            }
+        }
+    });
+    trees.forEach(treeObj => {
+        treeObj.traverse(obj => {
+            if (obj.isMesh) {
+                if (obj.name == "treeTrunk") {
+                    obj.material = getMaterial(type, COLORS.treeTrunk);
+                } else if (obj.name == "treeLeaf") {
+                    obj.material = getMaterial(type, COLORS.treeLeaves);
+                }
+            }
+        });
+    });
+
+    if (house)  house.traverse(obj => {
+        if (obj.isMesh) {
+            if (obj.name == "houseWall" || obj.name == "houseRoofWall" || obj.name == "housePillar" 
+                || obj.name == "houseChimney" || obj.name == "houseSeat") {
+                obj.material = getMaterial(type, COLORS.houseWall);
+            } else if (obj.name == "houseRoof") {
+                obj.material = getMaterial(type, COLORS.houseRoof);
+            } else if (obj.name == "houseDoor") {
+                obj.material = getMaterial(type, COLORS.houseDoor);
+            } else if (obj.name == "houseWindow" || obj.name == "houseCircularWindow" || obj.name == "houseArmrest"
+                || obj.name == "houseWrappingWalls" || obj.name == "houseWrappingRoof" ) {
+                obj.material = getMaterial(type, COLORS.houseWindow);
+            } else if (obj.name == "housePole" || obj.name == "houseHangingRoof") {
+                obj.material = getMaterial(type, COLORS.housePole);
+            } 
+        }
+    });
+}
+
+function getMaterial(type, c) {
+    materials = {
+        gouraud: new THREE.MeshLambertMaterial({ color: c }),
+        phong: new THREE.MeshPhongMaterial({ color: c, specular: 0xffffff, shininess: 100 }),
+        toon: new THREE.MeshToonMaterial({ color: c }),
+        basic: new THREE.MeshBasicMaterial({ color: c })
+    };
+    return materials[type];
 }
 
 //////////////////////
@@ -1070,7 +1170,18 @@ function onKeyDown(e) {
                 });
             }
             break;
-
+        case 'q':
+            setShading('gouraud');
+            break;
+        case 'w':
+            setShading('phong');
+            break;
+        case 'e':
+            setShading('toon');
+            break;
+        case 'r':
+            setShading('basic');
+            break;
     }
 }
 
