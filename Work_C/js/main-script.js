@@ -39,10 +39,13 @@ function createScene() {
     createSkyDome();
     createMoon();
     createField();
-    createTree(50,20,70,0,1);
-    createTree(20,15,30,Math.PI,2);
-    createTree(10,10,87,Math.PI/4,1.5);
-    createHouse(70, 50, 0);
+    createTree(50,13,70,0,1);
+    createTree(0,20,30,Math.PI,2);
+    createTree(-10,23,-87,Math.PI/4,1.5);
+    createTree(-50,25,-15,Math.PI/7,0.8);
+    createTree(70,15,-25,2*Math.PI/3,2.5);
+    createTree(-70,15,60,Math.PI/2,1.3);
+    createHouse(20, 18, -40);
     createOvni(0, 50, 0);
 }
 
@@ -141,7 +144,7 @@ function createSkyDome() {
 
 function addTrunk(obj, x, y, z, rot, height, radius) {
     const geometry = new THREE.CylinderGeometry(radius, radius, height, 10);
-    const material = new THREE.MeshBasicMaterial({ color: 0x4f2d0d});
+    const material = new THREE.MeshStandardMaterial({ color: 0x966920, roughness:0.5, metalness:0.1});
     const mesh = new THREE.Mesh(geometry, material);
 
     mesh.rotation.z = rot;
@@ -151,7 +154,7 @@ function addTrunk(obj, x, y, z, rot, height, radius) {
 
 function addLeaves(obj, x, y, z, height, radius) {
     const geometry = new THREE.SphereGeometry(radius);
-    const material = new THREE.MeshBasicMaterial({ color: 0x26c751});
+    const material = new THREE.MeshStandardMaterial({ color: 0x26c751, roughness:0.5, metalness:0.1});
     const mesh = new THREE.Mesh(geometry, material);
 
     mesh.scale.y = height;
@@ -179,7 +182,7 @@ function createTree(x, y, z, rotation, height) {
 
 function addWalls(obj) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    const material = new THREE.MeshBasicMaterial({ color: 0xf0f7f7});
 
     const vertices = new Float32Array( [
     ////////////////    PAREDE DA PORTA
@@ -212,7 +215,7 @@ function addWalls(obj) {
 
 function addRoofWall(obj) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    const material = new THREE.MeshBasicMaterial({ color: 0xf0f7f7});
 
     const vertices = new Float32Array( [
     ////////////////    SEGMENTO 1
@@ -251,7 +254,7 @@ function addRoofWall(obj) {
 
 function addPillar(obj, z) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    const material = new THREE.MeshBasicMaterial({ color: 0xf0f7f7});
 
     const vertices = new Float32Array( [
     /////////////////   PILAR 1 - PARTE LATERAL ESQ
@@ -301,7 +304,7 @@ function addPillar(obj, z) {
 
 function addRoof(obj) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    const material = new THREE.MeshBasicMaterial({ color: 0xf0b756});
     const vertices = new Float32Array( [   
     ////////////////    TELHADO - SEGMENTO 1
     0.0, 7.0,  4.0,     // inferior esquerdo
@@ -337,24 +340,24 @@ function addRoof(obj) {
 ] );
 
     const indices = [
-        ////////////////    PARTE LATERAL ESQ
+        ////////////////    TELHADO - SEGMENTO 1
 	    0, 1, 2,
 	    2, 3, 0,
-        /////////////////   PARTE LATERAL DIR
+        /////////////////   TELHADO - SEGMENTO 2
         4, 5, 6,
 	    6, 7, 4,
-        /////////////////   PARTE FRONTAL
+        /////////////////   TELHADO - SEGMENTO 3
         8, 9, 10,
 	    10, 11, 8,
-        /////////////////   PARTE SUPERIOR
-        12, 13, 14,
-	    14, 15, 12,
-        /////////////////   PARTE SUPERIOR
-        16, 17, 18,
-	    18, 19, 16,
-        /////////////////   PARTE SUPERIOR
-        20, 21, 22,
-	    22, 23, 20,
+        /////////////////   TELHADO - SEGMENTO 4
+        14, 13, 12,
+	    12, 15, 14,
+        /////////////////   TELHADO - SEGMENTO 5
+        18, 17, 16,
+	    16, 19, 18,
+        /////////////////   TELHADO - SEGMENTO 6
+        22, 21, 20,
+	    20, 23, 22,
     ];
 
     geometry.setIndex( indices );
@@ -366,7 +369,7 @@ function addRoof(obj) {
 
 function addChimney(obj) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true});
+    const material = new THREE.MeshBasicMaterial({ color: 0xf0f7f7});
 
     const vertices = new Float32Array( [
     /////////////////   CHAMINE - PARTE FRONTAL
@@ -458,7 +461,7 @@ function addChimney(obj) {
 
 function addArmrest(obj, x) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    const material = new THREE.MeshBasicMaterial({ color: 0x4b8ad6});
 
     const vertices = new Float32Array( [
     ////////////////    PARTE FRONTAL INFERIOR
@@ -516,7 +519,7 @@ function addArmrest(obj, x) {
 
 function addSeat(obj) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    const material = new THREE.MeshBasicMaterial({ color: 0xf0f7f7});
 
     const vertices = new Float32Array( [
     ////////////////    PARTE FRONTAL INFERIOR
@@ -589,7 +592,7 @@ function addBench(obj) {
 
 function addPole(obj, x) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    const material = new THREE.MeshBasicMaterial({ color: 0x966920});
 
     const vertices = new Float32Array( [
     ////////////////    BASE
@@ -640,7 +643,7 @@ function addPole(obj, x) {
 
 function addHangingRoof(obj) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    const material = new THREE.MeshBasicMaterial({ color: 0x966920});
 
     const vertices = new Float32Array( [
     ////////////////    BASE
@@ -681,7 +684,7 @@ function addPorch(obj) {
 
 function addDoor(obj) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    const material = new THREE.MeshBasicMaterial({ color: 0x99431f});
 
     const vertices = new Float32Array( [
         0.0, 0.0, 19.0,     
@@ -699,12 +702,13 @@ function addDoor(obj) {
     
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
     const mesh = new THREE.Mesh( geometry, material );
+    mesh.position.x += 0.02;
     obj.add(mesh);
 }
 
 function addWindow(obj, z) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    const material = new THREE.MeshBasicMaterial({ color: 0x4b8ad6});
 
     const vertices = new Float32Array( [
         0.0, 2.0, 9.0,     
@@ -723,12 +727,13 @@ function addWindow(obj, z) {
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
     const mesh = new THREE.Mesh( geometry, material );
     mesh.position.set(0, 0, z);
+    mesh.position.x += 0.01;
     obj.add(mesh);
 }
 
 function addCircularWindow(obj) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: false });
+    const material = new THREE.MeshBasicMaterial({ color: 0x4b8ad6});
 
     const vertices = new Float32Array( [
         -4.0, 8.5, 22.0,     
@@ -750,12 +755,13 @@ function addCircularWindow(obj) {
     
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
     const mesh = new THREE.Mesh( geometry, material );
+    mesh.position.z += 0.01;
     obj.add(mesh);
 }
 
 function addWrappingWalls(obj) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    const material = new THREE.MeshBasicMaterial({ color: 0x4b8ad6});
 
     const vertices = new Float32Array( [
     ////////////////    PAREDE DA PORTA
@@ -783,12 +789,14 @@ function addWrappingWalls(obj) {
     
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
     const mesh = new THREE.Mesh( geometry, material );
+    mesh.position.x += 0.01;
+    mesh.position.z += 0.01;
     obj.add(mesh);
 }
 
 function addWrappingRoof(obj, z) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    const material = new THREE.MeshBasicMaterial({ color: 0xf0f7f7});
     const vertices = new Float32Array( [   
     ////////////////    TELHADO - SEGMENTO 1
     0.0, 7.0,  4.0,     // inferior esquerdo
@@ -849,6 +857,7 @@ function addWrappingRoof(obj, z) {
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
     const mesh = new THREE.Mesh( geometry, material );
     mesh.position.set(0, 0, z);
+    mesh.position.y += 0.01;
     obj.add(mesh);
 }
 
@@ -875,12 +884,13 @@ function createHouse(x, y, z) {
     addPorch(house);
     addDetails(house);
     addDoor(house);
+    house.scale.set(2, 2, 2);
     house.position.set(x, y, z);
     scene.add(house);
 }
 
 function addOvniBody(obj, x, y, z) {
-    const material = new THREE.MeshBasicMaterial({ color: 0x808080, wireframe: true });
+    const material = new THREE.MeshBasicMaterial({ color: 0x808080});
     const geometry = new THREE.SphereGeometry(5, 32, 32);
     const mesh = new THREE.Mesh(geometry, material);
     mesh.scale.y = 0.2
@@ -889,7 +899,7 @@ function addOvniBody(obj, x, y, z) {
 }
 
 function addOvniCockpit(obj, x, y, z) {
-    const material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
+    const material = new THREE.MeshBasicMaterial({ color: 0xffffff});
     const geometry = new THREE.SphereGeometry(2, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2);
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y, z);
@@ -897,7 +907,7 @@ function addOvniCockpit(obj, x, y, z) {
 }
 
 function addOvniLight(obj,  x, y, z) {
-    const material = new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: true });
+    const material = new THREE.MeshBasicMaterial({ color: 0xffff00});
     const geometry = new THREE.SphereGeometry(0.5, 32, 32);
     const mesh = new THREE.Mesh(geometry, material);
     const light = new THREE.PointLight( 0xffff00, 5, 100 );
@@ -907,7 +917,7 @@ function addOvniLight(obj,  x, y, z) {
 }
 
 function addOvniSpotlight(obj, x, y, z) {
-    const material = new THREE.MeshBasicMaterial({ color: 0xcbc7bb, wireframe: true });
+    const material = new THREE.MeshBasicMaterial({ color: 0xcbc7bb});
     const geometry = new THREE.CylinderGeometry(2, 2, 0.5, 32);
     const mesh = new THREE.Mesh(geometry, material);
     spotLight = new THREE.SpotLight( 0xffffff, 30, 100, Math.PI / 8);
