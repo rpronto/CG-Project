@@ -48,8 +48,6 @@ let COLORS = {
 function createScene() {
     scene = new THREE.Scene();
 
-    scene.add(new THREE.AxesHelper(200));
-
     createLights();
     createSkyDome();
     createMoon();
@@ -73,6 +71,14 @@ function createCamera() {
     camera = new THREE.PerspectiveCamera(50, aspect, 1, 1000);
     camera.position.set(100, 100, 100);
     camera.lookAt(scene.position);
+}
+
+function resetCameraPosition() {
+    camera.position.set(100, 100, 100);
+    camera.lookAt(scene.position);
+    camera.fov = 50;
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
 }
 
 /////////////////////
@@ -1098,10 +1104,12 @@ function init() {
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener('resize', onResize, false);
     renderer.xr.addEventListener('sessionstart', () => {
+        VR = true;
         scene.position.set(-100,-100,-100);
     });
     renderer.xr.addEventListener('sessionend', () => {
-        scene.position.set(0,0,0);
+        VR = false;
+        resetCameraPosition();
     });
 }
 
@@ -1124,7 +1132,14 @@ function animate() {
 ////////////////////////////
 /* RESIZE WINDOW CALLBACK */
 ////////////////////////////
-function onResize() {}
+function onResize() {
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  if (window.innerHeight > 0 && window.innerWidth > 0) {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+  }
+}
 
 ///////////////////////
 /* KEY DOWN CALLBACK */
@@ -1185,7 +1200,10 @@ function onKeyDown(e) {
             setShading('basic');
             break;
         case '7':
-            VR = !VR;
+            if (VR) {
+                renderer.xr.getSession().end();
+                scene.position.set(0,0,0);
+            }
             break;
     }
 }
