@@ -1121,12 +1121,6 @@ function animate() {
         update();
         render(); 
     });
-    /*    if (VR) {
-        renderer.setAnimationLoop(animate);
-    } else {
-        requestAnimationFrame(animate);
-    }
-        */
 }
 
 ////////////////////////////
