@@ -9,8 +9,6 @@ import { TextureGenerator } from './TextureGenerator.js';
 /* GLOBAL VARIABLES */
 //////////////////////
 
-// Retirar depois, só para facilitar a construção
-let controls;
 ////////////////////////////////
 let camera, scene, renderer;
 let land, skyDome, moon;
@@ -20,6 +18,7 @@ let pointLightsOn = true;
 let ovniRotation = 0;
 let tree, house, ovni;
 let trees = [];
+let VR = false;
 const speed = 0.5;
 let keysPressed = {
     ArrowUp: false,
@@ -295,7 +294,7 @@ function addPillar(obj, z) {
     2.0,  4.0,  22.0,   // inferior esquerdo
     0.0,  5.0,  22.0,   // superior esquerdo
     0.0,  5.0,  20.0, // superior direito
-	2.0,  0.0, 20.0,  // inferior direito~
+	2.0,  4.0, 20.0,  // inferior direito
     ]);
 
     const indices = [
@@ -1064,8 +1063,8 @@ function handleCollisions() {}
 ////////////
 function update() {
     const ovniVector = new THREE.Vector3();
-    if (keysPressed.ArrowUp)    ovniVector.z += 1;
-    if (keysPressed.ArrowDown)  ovniVector.z -= 1;
+    if (keysPressed.ArrowUp)    ovniVector.z -= 1;
+    if (keysPressed.ArrowDown)  ovniVector.z += 1;
     if (keysPressed.ArrowRight) ovniVector.x += 1;
     if (keysPressed.ArrowLeft)  ovniVector.x -= 1;
     ovniVector.normalize();
@@ -1073,12 +1072,6 @@ function update() {
 
     ovniRotation += 0.01
     if (ovni) ovni.rotation.y = ovniRotation;
-
-    // Retirar depois, só para facilitar a construção
-    if (!renderer.xr.isPresenting && controls) {
-        controls.update();
-    }
-    ////////////////////////////////////////////////
 }
 
 /////////////
@@ -1095,28 +1088,37 @@ function init() {
     renderer = new THREE.WebGLRenderer({antialias: true,});
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
+    renderer.xr.enabled = true;
+    document.body.appendChild( VRButton.createButton( renderer ) );
 
     createScene();
     createCamera();
 
-    // Retirar depois, só para facilitar a construção
-    controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    //////////////////////////////
-
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener('resize', onResize, false);
+    renderer.xr.addEventListener('sessionstart', () => {
+        scene.position.set(-100,-100,-100);
+    });
+    renderer.xr.addEventListener('sessionend', () => {
+        scene.position.set(0,0,0);
+    });
 }
 
 /////////////////////
 /* ANIMATION CYCLE */
 /////////////////////
 function animate() {
-    update();
-    render();
-    requestAnimationFrame(animate);
+    renderer.setAnimationLoop(() => {
+        update();
+        render(); 
+    });
+    /*    if (VR) {
+        renderer.setAnimationLoop(animate);
+    } else {
+        requestAnimationFrame(animate);
+    }
+        */
 }
 
 ////////////////////////////
@@ -1181,6 +1183,9 @@ function onKeyDown(e) {
             break;
         case 'r':
             setShading('basic');
+            break;
+        case '7':
+            VR = !VR;
             break;
     }
 }
