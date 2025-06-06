@@ -202,7 +202,6 @@ function createTree(x, y, z, rotation, height) {
 
 function addWalls(obj) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0xf0f7f7});
 
     const vertices = new Float32Array( [
     ////////////////    PAREDE DA PORTA
@@ -237,7 +236,6 @@ function addWalls(obj) {
 
 function addRoofWall(obj) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0xf0f7f7});
 
     const vertices = new Float32Array( [
     ////////////////    SEGMENTO 1
@@ -278,7 +276,6 @@ function addRoofWall(obj) {
 
 function addPillar(obj, z) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0xf0f7f7});
 
     const vertices = new Float32Array( [
     /////////////////   PILAR 1 - PARTE LATERAL ESQ
@@ -330,7 +327,6 @@ function addPillar(obj, z) {
 
 function addRoof(obj) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0xf0b756});
     const vertices = new Float32Array( [   
     ////////////////    TELHADO - SEGMENTO 1
     0.0, 7.0,  4.0,     // inferior esquerdo
@@ -397,7 +393,6 @@ function addRoof(obj) {
 
 function addChimney(obj) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0xf0f7f7});
 
     const vertices = new Float32Array( [
     /////////////////   CHAMINE - PARTE FRONTAL
@@ -491,7 +486,6 @@ function addChimney(obj) {
 
 function addArmrest(obj, x) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x4b8ad6});
 
     const vertices = new Float32Array( [
     ////////////////    PARTE FRONTAL INFERIOR
@@ -551,7 +545,6 @@ function addArmrest(obj, x) {
 
 function addSeat(obj) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0xf0f7f7});
 
     const vertices = new Float32Array( [
     ////////////////    PARTE FRONTAL INFERIOR
@@ -626,7 +619,6 @@ function addBench(obj) {
 
 function addPole(obj, x) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x966920});
 
     const vertices = new Float32Array( [
     ////////////////    BASE
@@ -679,7 +671,6 @@ function addPole(obj, x) {
 
 function addHangingRoof(obj) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x966920});
 
     const vertices = new Float32Array( [
     ////////////////    BASE
@@ -722,7 +713,6 @@ function addPorch(obj) {
 
 function addDoor(obj) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x99431f});
 
     const vertices = new Float32Array( [
         0.0, 0.0, 19.0,     
@@ -748,7 +738,6 @@ function addDoor(obj) {
 
 function addWindow(obj, z) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x4b8ad6});
 
     const vertices = new Float32Array( [
         0.0, 2.0, 9.0,     
@@ -775,7 +764,6 @@ function addWindow(obj, z) {
 
 function addCircularWindow(obj) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x4b8ad6});
 
     const vertices = new Float32Array( [
         -4.0, 8.5, 22.0,     
@@ -805,7 +793,6 @@ function addCircularWindow(obj) {
 
 function addWrappingWalls(obj) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x4b8ad6});
 
     const vertices = new Float32Array( [
     ////////////////    PAREDE DA PORTA
@@ -842,7 +829,6 @@ function addWrappingWalls(obj) {
 
 function addWrappingRoof(obj, z) {
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0xf0f7f7});
     const vertices = new Float32Array( [   
     ////////////////    TELHADO - SEGMENTO 1
     0.0, 7.0,  4.0,     // inferior esquerdo
